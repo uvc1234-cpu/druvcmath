@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Store — Dr. UVC Math™</title>
+<meta name="description" content="Printable puzzle packs, method primers, and the full Math Puzzle Composer from Dr. UVC Math™ — instant download.">
+<meta name="robots" content="index, follow, noai, noimageai">
+<meta name="copyright" content="DR UVC LLC">
+<link rel="stylesheet" href="style.css">
+<style>
+  .store-head { background:var(--dark); color:#fff; text-align:center; padding:48px 20px 40px; border-bottom:3px solid var(--gold); }
+  .store-head .hero-eyebrow { font-size:11px; letter-spacing:3px; color:#b9a3d1; margin-bottom:10px; text-transform:uppercase; }
+  .store-head h1 { font-size:32px; font-weight:900; color:var(--gold); letter-spacing:2px; margin-bottom:10px; }
+  .store-head p { color:#ddd; max-width:620px; margin:0 auto; font-size:14px; line-height:1.7; }
+  .prod-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:18px; margin-top:20px; }
+  .prod-card { background:var(--card-bg); border:1px solid var(--border); border-left:5px solid var(--violet); border-radius:8px; padding:22px 22px 20px; display:flex; flex-direction:column; transition:box-shadow .2s, transform .2s; }
+  .prod-card:hover { box-shadow:0 4px 20px rgba(0,0,0,.10); transform:translateY(-2px); }
+  .prod-card .p-tag { align-self:flex-start; font-size:10px; font-weight:700; padding:3px 8px; border-radius:20px; letter-spacing:.5px; text-transform:uppercase; background:#f3e5f5; color:#6a1b9a; margin-bottom:10px; }
+  .prod-card .p-title { font-size:16px; font-weight:800; color:var(--dark); line-height:1.3; margin-bottom:8px; }
+  .prod-card .p-desc { font-size:13px; color:var(--subtext); line-height:1.65; margin-bottom:16px; flex:1; }
+  .prod-card .p-foot { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .prod-card .p-price { font-size:22px; font-weight:900; color:var(--violet); }
+  .buy-btn { background:var(--gold); color:var(--dark); font-weight:900; font-size:13px; padding:10px 22px; border-radius:6px; text-decoration:none; letter-spacing:.5px; white-space:nowrap; transition:opacity .2s; }
+  .buy-btn:hover { opacity:.85; }
+  .buy-btn.soon { background:#eee; color:#999; pointer-events:none; }
+  .store-note { font-size:12px; color:var(--subtext); text-align:center; margin-top:26px; line-height:1.7; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">Dr. UVC Math™</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="lessons.html">Free Lessons</a>
+    <a href="index.html" class="active">Store</a>
+    <a href="about.html">About</a>
+    <a href="https://druvc.com" target="_blank">Markets ↗</a>
+  </div>
+</nav>
+
+<div class="store-head">
+  <div class="hero-eyebrow">Dr. UVC Math™ · Instant Download</div>
+  <h1>The Store</h1>
+  <p>Printable puzzle packs, illustrated method primers, and the full Math Puzzle Composer. Secure checkout, instant access — pay with card, Apple&nbsp;Pay, or Google&nbsp;Pay.</p>
+</div>
+
+<div class="container section-wrap">
+  <div class="section-heading">Digital Products</div>
+  <div class="section-title">Packs, Primers &amp; Tools</div>
+  <div id="prodGrid" class="prod-grid"><!-- rendered by JS from PRODUCTS below --></div>
+  <div class="store-note">
+    Secure checkout powered by Stripe. All sales are for digital products delivered instantly after purchase.<br>
+    © 2026 DR UVC LLC · For learning and enrichment.
+  </div>
+</div>
+
+<div class="container section-wrap">
+  <div class="cta-block">
+    <h2>Prefer to try before you buy?</h2>
+    <p>Every method has a free interactive lesson. Play first — then take the printables home.</p>
+    <a href="lessons.html" class="btn-gold">Play the Free Lessons →</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-brand">Dr. UVC Math™ · Mental Math, Made Visual</div>
+  © 2026 <strong>DR UVC LLC</strong>. All Rights Reserved. Proprietary and Confidential.<br>
+  WonderPlate™ · Pan-Digital™ · Math Puzzle Composer™ are works of DR UVC LLC.<br><br>
+  <a href="index.html">Home</a> · <a href="lessons.html">Free Lessons</a> · <a href="about.html">About</a><br><br>
+  <em>For learning and enrichment. Enjoy responsibly, and share the wonder.</em>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PRODUCT CONFIG — Dr. UV: edit this list to add/remove products.
+     For each product, paste your Stripe Payment Link into "buy".
+     (Stripe → Payment Links → New. Set price, enable card/Apple/Google Pay,
+      and set the after-payment redirect to store/thankyou.html?p=KEY.)
+     Leave buy:"" to show a "Coming soon" button.
+════════════════════════════════════════════════════════════ -->
+<script>
+const PRODUCTS = [
+  {
+    tag:   "Puzzle Pack",
+    title: "Squares Near a Base — Printable Pack",
+    desc:  "A clean, printer-friendly set that turns the 89² method into practice pages — square numbers near any base, with worked examples and answer keys.",
+    price: "$4.99",
+    buy:   ""
+  },
+  {
+    tag:   "Primer",
+    title: "The Vinculum Primer",
+    desc:  "The sign-flip method, illustrated step by step — why it works and how to use it to make 9s disappear from your arithmetic. Includes practice sheets.",
+    price: "$3.99",
+    buy:   ""
+  },
+  {
+    tag:   "Tool",
+    title: "Math Puzzle Composer — Full Edition",
+    desc:  "The complete Composer with expanded templates: build, print, and share unlimited math puzzles for your class or your kids. Yours to keep.",
+    price: "$9.99",
+    buy:   ""
+  },
+  {
+    tag:   "Bundle",
+    title: "Pan-Digital Wonders — Activity Book",
+    desc:  "A full printable activity book of pan-digital patterns and challenges — every digit once, endless wonder. Great for enrichment and gifted programs.",
+    price: "$6.99",
+    buy:   ""
+  }
+];
+
+(function renderStore(){
+  const g = document.getElementById('prodGrid');
+  g.innerHTML = PRODUCTS.map(p => {
+    const btn = p.buy
+      ? `<a class="buy-btn" href="${p.buy}">Buy — ${p.price}</a>`
+      : `<span class="buy-btn soon">Coming soon</span>`;
+    return `<div class="prod-card">
+      <span class="p-tag">${p.tag}</span>
+      <div class="p-title">${p.title}</div>
+      <div class="p-desc">${p.desc}</div>
+      <div class="p-foot"><span class="p-price">${p.price}</span>${btn}</div>
+    </div>`;
+  }).join('');
+})();
+</script>
+
+</body>
+</html>

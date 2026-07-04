@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Just 1·2·3 — Math Puzzles!</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap');
+
+:root {
+  --sky:    #e8f4fd;
+  --blue:   #2196F3;
+  --bludk:  #1565C0;
+  --green:  #4CAF50;
+  --greendk:#2E7D32;
+  --orange: #FF9800;
+  --orangdk:#E65100;
+  --purple: #9C27B0;
+  --purpdk: #6A1B9A;
+  --red:    #F44336;
+  --yellow: #FFC107;
+  --ink:    #1a1a2e;
+  --soft:   #5a5a7a;
+  --card:   #ffffff;
+  --bg:     #f0f4ff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.hero {
+  background: linear-gradient(135deg, #1565C0 0%, #9C27B0 50%, #E91E63 100%);
+  padding: 32px 20px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: "1  2  3  1  2  3  1  2  3  1  2  3  1  2  3";
+  position: absolute; top: 8px; left: 0; right: 0;
+  font-family: 'Fredoka One', sans-serif; font-size: 14px;
+  color: rgba(255,255,255,.15); letter-spacing: 8px;
+  white-space: nowrap; overflow: hidden;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,.15);
+  border: 2px solid rgba(255,255,255,.4);
+  border-radius: 50px;
+  padding: 6px 20px;
+  font-size: 13px; font-weight: 700;
+  color: rgba(255,255,255,.9);
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.hero h1 {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: clamp(42px, 10vw, 80px);
+  color: #fff;
+  line-height: 1;
+  text-shadow: 0 4px 20px rgba(0,0,0,.3);
+  letter-spacing: 2px;
+}
+.hero h1 .n1 { color: #FFD54F; }
+.hero h1 .dot { color: rgba(255,255,255,.6); font-size: .6em; }
+.hero h1 .n2 { color: #A5D6A7; }
+.hero h1 .n3 { color: #F48FB1; }
+.hero-sub {
+  color: rgba(255,255,255,.85);
+  font-size: 18px; font-weight: 600;
+  margin-top: 10px;
+}
+.hero-digits {
+  display: flex; justify-content: center; gap: 16px;
+  margin-top: 20px;
+}
+.digit-bubble {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fredoka One', sans-serif; font-size: 26px; color: #fff;
+  box-shadow: 0 6px 20px rgba(0,0,0,.25);
+  animation: bob 2s ease-in-out infinite;
+}
+.digit-bubble:nth-child(1) { background: #FFD54F; color: #333; animation-delay: 0s; }
+.digit-bubble:nth-child(2) { background: #A5D6A7; color: #333; animation-delay: .3s; }
+.digit-bubble:nth-child(3) { background: #F48FB1; color: #333; animation-delay: .6s; }
+@keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+/* ── NAV TABS ── */
+.tabs {
+  display: flex; justify-content: center; gap: 8px;
+  padding: 20px 16px 0; flex-wrap: wrap;
+}
+.tab {
+  padding: 10px 22px; border-radius: 50px; border: none;
+  font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800;
+  cursor: pointer; transition: all .2s;
+  background: #fff; color: var(--soft);
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+.tab.active { color: #fff; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.2); }
+.tab[data-tab="fitb"].active   { background: var(--blue); }
+.tab[data-tab="onemove"].active{ background: var(--green); }
+.tab[data-tab="explore"].active{ background: var(--purple); }
+.tab[data-tab="moveit"].active { background: var(--orange); }
+
+/* ── MAIN ── */
+main { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
+
+.section { display: none; }
+.section.active { display: block; }
+
+/* ── SECTION HEADER ── */
+.sec-head {
+  text-align: center; margin-bottom: 24px;
+}
+.sec-head h2 {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 32px; margin-bottom: 4px;
+}
+.sec-head p { font-size: 15px; color: var(--soft); font-weight: 600; }
+
+/* ── PUZZLE CARD ── */
+.puzzle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+.pcard {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.08);
+  border: 3px solid transparent;
+  transition: transform .2s, box-shadow .2s;
+  position: relative;
+  overflow: hidden;
+}
+.pcard:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,.13); }
+.pcard.blue   { border-color: #90CAF9; }
+.pcard.green  { border-color: #A5D6A7; }
+.pcard.orange { border-color: #FFCC80; }
+.pcard.purple { border-color: #CE93D8; }
+
+.pcard-num {
+  position: absolute; top: 12px; right: 14px;
+  font-family: 'Fredoka One', sans-serif; font-size: 13px;
+  color: rgba(0,0,0,.18);
+}
+.pcard-tag {
+  display: inline-block;
+  padding: 3px 12px; border-radius: 50px;
+  font-size: 11px; font-weight: 800; letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 12px;
+}
+.tag-easy   { background: #E3F2FD; color: #1565C0; }
+.tag-medium { background: #E8F5E9; color: #2E7D32; }
+.tag-hard   { background: #F3E5F5; color: #6A1B9A; }
+.tag-boss   { background: #FFF3E0; color: #E65100; }
+
+.pcard-eq {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 34px;
+  text-align: center;
+  letter-spacing: 2px;
+  margin: 8px 0 14px;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.pcard-eq .blank {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px;
+  background: #FFF9C4; border: 2.5px dashed #FFC107;
+  border-radius: 10px; vertical-align: middle;
+  font-size: 28px; color: transparent;
+  cursor: pointer; transition: all .2s;
+  position: relative;
+}
+.pcard-eq .blank.filled {
+  background: #E8F5E9; border: 2.5px solid #4CAF50;
+  color: #2E7D32;
+}
+.pcard-eq .blank.wrong {
+  background: #FFEBEE; border: 2.5px solid #F44336;
+  color: #C62828; animation: shake .3s;
+}
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+
+.pcard-hint {
+  font-size: 12px; color: var(--soft); font-weight: 600;
+  text-align: center; min-height: 18px;
+}
+
+/* numpad */
+.numpad {
+  display: flex; justify-content: center; gap: 8px; margin-top: 12px;
+}
+.npbtn {
+  width: 44px; height: 44px; border-radius: 12px; border: none;
+  font-family: 'Fredoka One', sans-serif; font-size: 22px;
+  cursor: pointer; transition: all .15s;
+  box-shadow: 0 3px 8px rgba(0,0,0,.15);
+}
+.npbtn.n1 { background: #FFD54F; color: #5D4037; }
+.npbtn.n2 { background: #A5D6A7; color: #1B5E20; }
+.npbtn.n3 { background: #F48FB1; color: #880E4F; }
+.npbtn:hover { transform: scale(1.12); }
+.npbtn.clr { background: #EF9A9A; color: #B71C1C; font-size: 16px; }
+
+.check-btn {
+  display: block; width: 100%; margin-top: 12px;
+  padding: 10px; border-radius: 12px; border: none;
+  font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800;
+  cursor: pointer; transition: all .2s;
+  background: var(--blue); color: #fff;
+  letter-spacing: .5px;
+}
+.check-btn:hover { background: var(--bludk); transform: translateY(-1px); }
+
+/* result states */
+.pcard.solved { border-color: #4CAF50 !important; background: #F1F8E9; }
+.pcard.solved .check-btn { background: #4CAF50; }
+.solved-badge {
+  display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(76,175,80,.92); border-radius: 17px;
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 6px;
+  font-family: 'Fredoka One', sans-serif; color: #fff;
+  font-size: 28px; text-align: center;
+}
+.pcard.solved .solved-badge { display: flex; }
+
+/* ── SCORE BAR ── */
+.score-bar {
+  background: #fff; border-radius: 16px; padding: 14px 20px;
+  margin-bottom: 20px; display: flex; align-items: center; gap: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.07);
+}
+.score-bar .label { font-weight: 800; font-size: 14px; color: var(--soft); }
+.score-val { font-family: 'Fredoka One', sans-serif; font-size: 26px; }
+.score-val.blue   { color: var(--blue); }
+.score-val.green  { color: var(--green); }
+.progress-wrap { flex: 1; height: 12px; background: #e0e0e0; border-radius: 50px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 50px; transition: width .5s; background: linear-gradient(90deg,var(--blue),var(--purple)); }
+
+/* ── ONE-MOVE SECTION ── */
+.om-card {
+  background: var(--card); border-radius: 20px; padding: 20px 22px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.08);
+  border: 3px solid #A5D6A7;
+  margin-bottom: 14px; position: relative; overflow: hidden;
+}
+.om-card.solved { border-color: #4CAF50; background: #F1F8E9; }
+.om-card.wrong-ans { border-color: #F44336; }
+.om-num {
+  font-family: 'Fredoka One', sans-serif; font-size: 12px;
+  color: rgba(0,0,0,.2); margin-bottom: 6px;
+}
+.om-false {
+  font-family: 'Fredoka One', sans-serif; font-size: 28px;
+  color: #C62828; text-decoration: line-through; text-align: center;
+  margin-bottom: 6px;
+}
+.om-question {
+  font-size: 14px; font-weight: 700; color: var(--soft);
+  text-align: center; margin-bottom: 10px;
+}
+.om-question strong { color: var(--green); }
+.om-inputs {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; font-family: 'Fredoka One', sans-serif; font-size: 26px;
+  flex-wrap: wrap;
+}
+.om-input {
+  width: 52px; height: 52px; border-radius: 12px;
+  border: 2.5px dashed #FFC107; background: #FFF9C4;
+  font-family: 'Fredoka One', sans-serif; font-size: 26px;
+  text-align: center; color: var(--ink); outline: none;
+  transition: all .2s;
+}
+.om-input:focus { border-color: var(--blue); background: #E3F2FD; border-style: solid; }
+.om-input.correct { border-color: #4CAF50; background: #E8F5E9; border-style: solid; }
+.om-input.incorrect { border-color: #F44336; background: #FFEBEE; border-style: solid; }
+.om-check {
+  display: block; width: 100%; margin-top: 12px;
+  padding: 10px; border-radius: 12px; border: none;
+  font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800;
+  cursor: pointer; background: var(--green); color: #fff;
+  transition: all .2s; letter-spacing: .5px;
+}
+.om-check:hover { background: var(--greendk); transform: translateY(-1px); }
+.om-feedback { text-align: center; font-weight: 800; font-size: 13px; margin-top: 8px; min-height: 18px; }
+.om-feedback.ok  { color: var(--green); }
+.om-feedback.bad { color: var(--red); }
+
+/* ── EXPLORE SECTION ── */
+.explore-intro {
+  background: linear-gradient(135deg,#EDE7F6,#E8EAF6);
+  border-radius: 20px; padding: 24px; margin-bottom: 24px;
+  border: 2px solid #CE93D8;
+}
+.explore-intro h3 { font-family: 'Fredoka One',sans-serif; font-size: 22px; color: var(--purple); margin-bottom: 8px; }
+.explore-intro p  { font-size: 14px; color: var(--soft); font-weight: 600; line-height: 1.6; }
+
+.open-puzzle {
+  background: var(--card); border-radius: 20px; padding: 22px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.08);
+  border: 3px solid #CE93D8; margin-bottom: 14px;
+}
+.open-puzzle h4 { font-family: 'Fredoka One',sans-serif; font-size: 20px; color: var(--purple); margin-bottom: 6px; }
+.open-puzzle p  { font-size: 13px; color: var(--soft); font-weight: 600; margin-bottom: 12px; }
+.open-eq { font-family: 'Fredoka One',sans-serif; font-size: 40px; text-align: center; color: var(--ink); margin: 10px 0; }
+.answers-area {
+  background: #F3E5F5; border-radius: 12px; padding: 12px 16px;
+  min-height: 48px; font-family: 'Fredoka One',sans-serif;
+  font-size: 18px; color: var(--purpdk); letter-spacing: 1px;
+}
+.find-btn {
+  margin-top: 10px; padding: 10px 20px; border-radius: 12px; border: none;
+  font-family:'Nunito',sans-serif; font-size: 14px; font-weight: 800;
+  cursor: pointer; background: var(--purple); color: #fff;
+  transition: all .2s;
+}
+.find-btn:hover { background: var(--purpdk); transform: translateY(-1px); }
+
+
+
+/* ══ IMAGE MASCOT / CHAR SLOTS ══ */
+.char-slot {
+  display:flex; justify-content:center; align-items:center;
+  margin: 0 auto 20px auto;
+  width: 160px; height: 160px;
+}
+.char-slot img {
+  width: 160px; height: 160px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,.12));
+  transition: transform .3s;
+}
+.char-slot img:hover { transform: scale(1.06) rotate(-3deg); }
+.char-slot .char-placeholder {
+  width:140px; height:140px; border-radius:50%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-size:52px; line-height:1;
+  background: linear-gradient(135deg,#E3F2FD,#FCE4EC);
+  border: 3px dashed #BDBDBD;
+  color:#9E9E9E; font-family:'Fredoka One',sans-serif;
+}
+.char-placeholder span { font-size:11px; margin-top:6px; letter-spacing:.5px; font-weight:700; }
+
+/* Hero mascot at top */
+.hero-mascot {
+  display: flex; justify-content:center; margin-bottom: 6px; margin-top:-10px;
+}
+.hero-mascot img {
+  width:110px; height:110px; object-fit:contain;
+  filter:drop-shadow(0 6px 16px rgba(0,0,0,.15));
+  transition:transform .4s;
+}
+.hero-mascot img:hover { transform: scale(1.08) rotate(4deg); }
+.hero-mascot .char-placeholder {
+  width:90px;height:90px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:42px; background:linear-gradient(135deg,#FFF9C4,#FFF3E0);
+  border:3px dashed #FFCC80;
+}
+
+/* ══ MOVE IT SECTION ══ */
+.moveit-intro {
+  background: linear-gradient(135deg,#FFF8E1,#FFF3E0);
+  border-radius: 20px; padding: 22px; margin-bottom: 24px;
+  border: 2px solid #FFCC80;
+}
+.moveit-intro h3 { font-family:'Fredoka One',sans-serif; font-size:22px; color:var(--orange); margin-bottom:6px; }
+.moveit-intro p  { font-size:14px; color:var(--soft); font-weight:600; line-height:1.7; }
+.moveit-intro .example-box {
+  background:#fff; border-radius:14px; padding:14px 18px; margin-top:14px;
+  border:2px solid #FFCC80; text-align:center;
+}
+.moveit-intro .ex-false {
+  font-family:'Fredoka One',sans-serif; font-size:24px; color:#C62828;
+  text-decoration:line-through; margin-bottom:4px;
+}
+.moveit-intro .ex-arrow { font-size:22px; color:var(--orange); margin:4px 0; }
+.moveit-intro .ex-true  {
+  font-family:'Fredoka One',sans-serif; font-size:28px; color:var(--greendk);
+}
+.moveit-intro .ex-label {
+  font-size:12px; color:var(--soft); font-weight:700; margin-top:6px;
+  letter-spacing:.5px;
+}
+
+.mi-card {
+  background:var(--card); border-radius:20px; padding:22px 22px 16px;
+  box-shadow:0 4px 16px rgba(0,0,0,.08);
+  border:3px solid #FFCC80; margin-bottom:14px;
+  position:relative; overflow:hidden;
+  transition:border-color .3s;
+}
+.mi-card.solved { border-color:#4CAF50; background:#F1F8E9; }
+
+.mi-num  { font-family:'Fredoka One',sans-serif; font-size:12px; color:rgba(0,0,0,.2); margin-bottom:4px; }
+.mi-tier {
+  display:inline-block; padding:3px 12px; border-radius:50px;
+  font-size:11px; font-weight:800; letter-spacing:1px;
+  text-transform:uppercase; margin-bottom:10px;
+}
+.tier-1move  { background:#FFF3E0; color:#E65100; }
+.tier-2move  { background:#FCE4EC; color:#880E4F; }
+.tier-exp    { background:#E8EAF6; color:#283593; }
+
+.mi-false {
+  font-family:'Fredoka One',sans-serif; font-size:30px;
+  color:#C62828; text-align:center;
+  margin-bottom:6px;
+}
+.mi-allowed {
+  text-align:center; font-size:13px; font-weight:700; color:var(--soft);
+  margin-bottom:12px; letter-spacing:.3px;
+}
+.mi-allowed strong { color:var(--orange); font-family:'Fredoka One',sans-serif; font-size:15px; }
+
+.mi-answer-row {
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  margin-bottom:10px; flex-wrap:wrap;
+}
+.mi-inp {
+  width:56px; height:56px; border-radius:14px;
+  border:2.5px dashed #FFC107; background:#FFF9C4;
+  font-family:'Fredoka One',sans-serif; font-size:22px;
+  text-align:center; color:var(--ink); outline:none;
+  transition:all .2s;
+}
+.mi-inp:focus { border-color:var(--orange); background:#FFF3E0; border-style:solid; }
+.mi-inp.correct  { border-color:#4CAF50; background:#E8F5E9; border-style:solid; }
+.mi-inp.incorrect{ border-color:#F44336; background:#FFEBEE; border-style:solid; }
+.mi-static {
+  font-family:'Fredoka One',sans-serif; font-size:26px; color:var(--ink);
+}
+.mi-sup {
+  font-family:'Fredoka One',sans-serif; font-size:14px;
+  vertical-align:super; color:var(--purpdk);
+}
+
+.mi-check {
+  display:block; width:100%; margin-top:10px;
+  padding:10px; border-radius:12px; border:none;
+  font-family:'Nunito',sans-serif; font-size:14px; font-weight:800;
+  cursor:pointer; background:var(--orange); color:#fff;
+  transition:all .2s;
+}
+.mi-check:hover { background:var(--orangdk); transform:translateY(-1px); }
+.mi-feedback { text-align:center; font-weight:800; font-size:13px; margin-top:8px; min-height:18px; }
+.mi-feedback.ok  { color:var(--green); }
+.mi-feedback.bad { color:var(--red); }
+
+.mi-hint-btn {
+  display:block; width:100%; margin-top:6px;
+  padding:7px; border-radius:10px; border:1px dashed #FFCC80;
+  font-family:'Nunito',sans-serif; font-size:12px; font-weight:700;
+  cursor:pointer; background:transparent; color:var(--orange);
+  transition:all .2s;
+}
+.mi-hint-btn:hover { background:#FFF8E1; }
+.mi-hint-text { font-size:12px; color:var(--soft); font-weight:600; text-align:center; margin-top:6px; min-height:16px; }
+
+/* ── FOOTER ── */
+footer {
+  text-align: center; padding: 24px;
+  font-size: 13px; color: var(--soft); font-weight: 700;
+  letter-spacing: 1px;
+}
+footer span { color: var(--blue); }
+
+/* ── CONFETTI ── */
+.confetti-piece {
+  position: fixed; width: 10px; height: 10px; top: -10px;
+  border-radius: 2px; animation: fall 1.5s ease-in forwards;
+  pointer-events: none; z-index: 999;
+}
+@keyframes fall {
+  to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Dr. UV's Math Universe</div>
+  <h1><span class="n1">1</span><span class="dot">·</span><span class="n2">2</span><span class="dot">·</span><span class="n3">3</span> &nbsp;Puzzles!</h1>
+  <p class="hero-sub">Three digits. Infinite fun. Can you crack the code? 🔢</p>
+  <div class="hero-digits">
+    <div class="digit-bubble">1</div>
+    <div class="digit-bubble">2</div>
+    <div class="digit-bubble">3</div>
+  </div>
+</div>
+
+<!-- TABS -->
+
+  <!-- HERO MASCOT -->
+  <div class="hero-mascot">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 130" width="110" height="120">
+  <ellipse cx="60" cy="80" rx="36" ry="42" fill="#C17F3A"/>
+  <ellipse cx="60" cy="88" rx="22" ry="28" fill="#F5DEB3"/>
+  <ellipse cx="22" cy="85" rx="14" ry="22" fill="#A0522D" transform="rotate(-15,22,85)"/>
+  <ellipse cx="98" cy="85" rx="14" ry="22" fill="#A0522D" transform="rotate(15,98,85)"/>
+  <ellipse cx="60" cy="46" rx="30" ry="28" fill="#C17F3A"/>
+  <polygon points="38,22 32,8 46,18" fill="#A0522D"/>
+  <polygon points="82,22 88,8 74,18" fill="#A0522D"/>
+  <circle cx="47" cy="44" r="11" fill="white" stroke="#333" stroke-width="1.5"/>
+  <circle cx="73" cy="44" r="11" fill="white" stroke="#333" stroke-width="1.5"/>
+  <circle cx="49" cy="45" r="6" fill="#2196F3"/>
+  <circle cx="75" cy="45" r="6" fill="#2196F3"/>
+  <circle cx="51" cy="43" r="2.5" fill="#111"/>
+  <circle cx="77" cy="43" r="2.5" fill="#111"/>
+  <circle cx="52" cy="42" r="1" fill="white"/>
+  <circle cx="78" cy="42" r="1" fill="white"/>
+  <polygon points="60,52 55,58 65,58" fill="#FF9800"/>
+  <rect x="36" y="21" width="48" height="7" rx="3" fill="#222"/>
+  <ellipse cx="60" cy="21" rx="26" ry="5" fill="#333"/>
+  <line x1="60" y1="21" x2="82" y2="16" stroke="#FFD700" stroke-width="2"/>
+  <circle cx="82" cy="15" r="3" fill="#FFD700"/>
+  <rect x="30" y="95" width="60" height="30" rx="5" fill="#2E7D32" stroke="#4CAF50" stroke-width="2"/>
+  <text x="60" y="112" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="13" font-weight="900" fill="#FFD700" letter-spacing="1">1&#xB7;2&#xB7;3</text>
+  <rect x="20" y="120" width="80" height="8" rx="2" fill="#E53935"/>
+  <rect x="24" y="114" width="72" height="7" rx="2" fill="#1976D2"/>
+  <rect x="28" y="108" width="64" height="7" rx="2" fill="#43A047"/>
+</svg>
+  </div>
+
+  <div class="tabs">
+  <button class="tab active" data-tab="fitb" onclick="switchTab('fitb')">🔲 Fill the Blank</button>
+  <button class="tab" data-tab="onemove" onclick="switchTab('onemove')">🔀 One Move!</button>
+  <button class="tab" data-tab="explore" onclick="switchTab('explore')">🔭 Explore</button>
+  <button class="tab" data-tab="moveit" onclick="switchTab('moveit')">⚡ Move It!</button>
+</div>
+
+<main>
+
+  <!-- ══════════════ FITB SECTION ══════════════ -->
+  <section class="section active" id="sec-fitb">
+    <div class="sec-head">
+      <h2 style="color:var(--blue)">🔲 Fill in the Blank</h2>
+      <p>Use only the digits <strong>1, 2, 3</strong> to make each equation true!</p>
+    </div>
+
+    <div class="score-bar">
+      <div>
+        <div class="label">SCORE</div>
+        <div class="score-val blue" id="fitb-score">0</div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-fill" id="fitb-progress" style="width:0%"></div>
+      </div>
+      <div>
+        <div class="label">SOLVED</div>
+        <div class="score-val blue" id="fitb-solved">0/10</div>
+      </div>
+    </div>
+
+
+    <!-- Robot -->
+    <div class="char-slot"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" width="130" height="150">
+  <line x1="60" y1="10" x2="60" y2="24" stroke="#555" stroke-width="3"/>
+  <circle cx="60" cy="8" r="5" fill="#F44336"/>
+  <rect x="28" y="24" width="64" height="50" rx="10" fill="#1565C0" stroke="#0D47A1" stroke-width="2"/>
+  <rect x="36" y="34" width="18" height="14" rx="4" fill="#00E5FF"/>
+  <rect x="66" y="34" width="18" height="14" rx="4" fill="#00E5FF"/>
+  <circle cx="45" cy="41" r="4" fill="#00BCD4"/>
+  <circle cx="75" cy="41" r="4" fill="#00BCD4"/>
+  <circle cx="45" cy="41" r="2" fill="#006064"/>
+  <circle cx="75" cy="41" r="2" fill="#006064"/>
+  <rect x="40" y="56" width="40" height="8" rx="4" fill="#0D47A1"/>
+  <rect x="44" y="58" width="7" height="4" rx="1" fill="#4FC3F7"/>
+  <rect x="57" y="58" width="7" height="4" rx="1" fill="#4FC3F7"/>
+  <rect x="70" y="58" width="7" height="4" rx="1" fill="#4FC3F7"/>
+  <rect x="26" y="76" width="68" height="44" rx="8" fill="#1976D2" stroke="#1565C0" stroke-width="2"/>
+  <rect x="36" y="84" width="48" height="28" rx="5" fill="#0D47A1"/>
+  <circle cx="52" cy="98" r="7" fill="#4CAF50"/>
+  <circle cx="72" cy="98" r="7" fill="#FF9800"/>
+  <rect x="4" y="78" width="20" height="36" rx="8" fill="#1976D2"/>
+  <rect x="96" y="78" width="20" height="36" rx="8" fill="#1976D2"/>
+  <rect x="75" y="114" width="28" height="20" rx="3" fill="white" stroke="#FFD600" stroke-width="2.5" stroke-dasharray="4,2"/>
+  <text x="89" y="129" text-anchor="middle" font-family="Arial Black" font-size="13" fill="#BDBDBD">?</text>
+  <rect x="36" y="118" width="18" height="12" rx="4" fill="#1565C0"/>
+  <rect x="66" y="118" width="18" height="12" rx="4" fill="#1565C0"/>
+</svg></div>
+    <div class="puzzle-grid" id="fitb-grid"></div>
+  </section>
+
+  <!-- ══════════════ ONE-MOVE SECTION ══════════════ -->
+  <section class="section" id="sec-onemove">
+    <div class="sec-head">
+      <h2 style="color:var(--green)">🔀 One Move!</h2>
+      <p>The equation is <strong style="color:#C62828">FALSE</strong>. Rearrange the digits of the result to make it <strong style="color:#2E7D32">TRUE</strong>!</p>
+    </div>
+
+
+    <!-- Fox Detective -->
+    <div class="char-slot"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 130" width="150" height="150">
+  <ellipse cx="105" cy="105" rx="22" ry="12" fill="#E65100" transform="rotate(30,105,105)"/>
+  <ellipse cx="108" cy="102" rx="12" ry="6" fill="white" transform="rotate(30,108,102)"/>
+  <ellipse cx="60" cy="90" rx="30" ry="34" fill="#EF6C00"/>
+  <ellipse cx="60" cy="96" rx="18" ry="22" fill="#FFCCBC"/>
+  <ellipse cx="60" cy="52" rx="28" ry="26" fill="#EF6C00"/>
+  <polygon points="36,30 28,10 50,28" fill="#EF6C00"/>
+  <polygon points="84,30 92,10 70,28" fill="#EF6C00"/>
+  <polygon points="38,28 32,14 48,26" fill="#C62828"/>
+  <polygon points="82,28 88,14 72,26" fill="#C62828"/>
+  <ellipse cx="60" cy="58" rx="18" ry="14" fill="#FFCCBC"/>
+  <circle cx="50" cy="48" r="7" fill="white" stroke="#333" stroke-width="1"/>
+  <circle cx="70" cy="48" r="7" fill="white" stroke="#333" stroke-width="1"/>
+  <circle cx="51" cy="49" r="4" fill="#2E7D32"/>
+  <circle cx="71" cy="49" r="4" fill="#2E7D32"/>
+  <circle cx="52" cy="48" r="2" fill="#111"/>
+  <circle cx="72" cy="48" r="2" fill="#111"/>
+  <circle cx="53" cy="47" r="1" fill="white"/>
+  <circle cx="73" cy="47" r="1" fill="white"/>
+  <ellipse cx="60" cy="60" rx="4" ry="3" fill="#BF360C"/>
+  <path d="M55,63 Q60,68 65,63" stroke="#BF360C" stroke-width="1.5" fill="none"/>
+  <rect x="36" y="28" width="48" height="6" rx="3" fill="#4A148C"/>
+  <rect x="40" y="14" width="40" height="16" rx="4" fill="#6A1B9A"/>
+  <rect x="48" y="20" width="24" height="4" rx="2" fill="#CE93D8"/>
+  <circle cx="96" cy="72" r="16" fill="none" stroke="#555" stroke-width="4"/>
+  <ellipse cx="96" cy="72" rx="12" ry="12" fill="rgba(200,240,255,0.4)"/>
+  <line x1="108" y1="84" x2="120" y2="97" stroke="#555" stroke-width="5" stroke-linecap="round"/>
+  <rect x="14" y="92" width="28" height="28" rx="5" fill="#1976D2"/>
+  <text x="28" y="111" text-anchor="middle" font-family="Arial Black" font-size="18" font-weight="900" fill="white">3</text>
+  <rect x="48" y="92" width="28" height="28" rx="5" fill="#E53935"/>
+  <text x="62" y="111" text-anchor="middle" font-family="Arial Black" font-size="18" font-weight="900" fill="white">1</text>
+  <defs><marker id="arr2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#FFD600"/></marker></defs>
+  <path d="M42,100 Q45,90 48,100" stroke="#FFD600" stroke-width="2.5" fill="none" marker-end="url(#arr2)"/>
+</svg></div>
+    <div class="score-bar">
+      <div>
+        <div class="label">SCORE</div>
+        <div class="score-val green" id="om-score">0</div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-fill" id="om-progress" style="width:0%;background:linear-gradient(90deg,var(--green),#8BC34A)"></div>
+      </div>
+      <div>
+        <div class="label">SOLVED</div>
+        <div class="score-val green" id="om-solved">0/8</div>
+      </div>
+    </div>
+
+    <div id="om-grid"></div>
+  </section>
+
+
+  <!-- ══════════════ MOVE IT SECTION ══════════════ -->
+  <section class="section" id="sec-moveit">
+    <div class="sec-head">
+      <h2 style="color:var(--orange)">⚡ Move It!</h2>
+      <p>The equation is <strong style="color:#C62828">FALSE</strong>. Make <strong>one or two moves</strong> — move a digit, add an exponent, or use a symbol — to make it <strong style="color:#2E7D32">TRUE</strong>!</p>
+    </div>
+
+    <div class="moveit-intro">
+      <h3>🌟 The Signature Puzzle</h3>
+      <p>Sometimes moving a digit to become a <strong>power (exponent)</strong> completely transforms an equation.
+         You're not calculating — you're <em>seeing</em> a hidden structure!</p>
+      <div class="example-box">
+        <div class="ex-false">1 + 23 = 23</div>
+        <div class="ex-arrow">⬇ Move the 3 up to become an exponent on both sides</div>
+        <div class="ex-true">1 + 2³ = 3²</div>
+        <div class="ex-label">8 + 1 = 9 ✓ &nbsp;·&nbsp; Both sides equal 9!</div>
+      </div>
+    </div>
+
+    
+    <!-- Move It Character -->
+    <div class="char-slot"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 130" width="150" height="150">
+  <line x1="0" y1="70" x2="30" y2="68" stroke="#FFD600" stroke-width="3" opacity="0.6"/>
+  <line x1="0" y1="82" x2="25" y2="80" stroke="#FF9800" stroke-width="2" opacity="0.5"/>
+  <line x1="0" y1="58" x2="20" y2="57" stroke="#FFD600" stroke-width="2" opacity="0.4"/>
+  <path d="M100,95 Q118,80 115,60 Q112,50 105,55" stroke="#E65100" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <circle cx="104" cy="57" r="6" fill="#F57F17"/>
+  <path d="M42,55 Q30,85 20,100 Q50,90 65,95 Q55,75 42,55Z" fill="#E53935" opacity="0.9"/>
+  <ellipse cx="68" cy="80" rx="32" ry="24" fill="#F9A825"/>
+  <ellipse cx="60" cy="72" rx="5" ry="4" fill="#E65100" opacity="0.7"/>
+  <ellipse cx="78" cy="68" rx="4" ry="3" fill="#E65100" opacity="0.7"/>
+  <ellipse cx="88" cy="80" rx="4" ry="3" fill="#E65100" opacity="0.7"/>
+  <ellipse cx="68" cy="88" rx="5" ry="3.5" fill="#E65100" opacity="0.7"/>
+  <ellipse cx="45" cy="52" rx="24" ry="22" fill="#F9A825"/>
+  <polygon points="30,36 24,22 40,34" fill="#F9A825"/>
+  <polygon points="60,36 66,22 50,34" fill="#F9A825"/>
+  <polygon points="31,34 27,24 39,32" fill="#E91E63"/>
+  <polygon points="59,34 63,24 51,32" fill="#E91E63"/>
+  <ellipse cx="45" cy="56" rx="14" ry="10" fill="#FFF8E1"/>
+  <circle cx="38" cy="49" r="6" fill="white" stroke="#333" stroke-width="1"/>
+  <circle cx="53" cy="49" r="6" fill="white" stroke="#333" stroke-width="1"/>
+  <circle cx="39" cy="50" r="3.5" fill="#1B5E20"/>
+  <circle cx="54" cy="50" r="3.5" fill="#1B5E20"/>
+  <circle cx="40" cy="49" r="2" fill="#111"/>
+  <circle cx="55" cy="49" r="2" fill="#111"/>
+  <circle cx="41" cy="48" r="1" fill="white"/>
+  <circle cx="56" cy="48" r="1" fill="white"/>
+  <ellipse cx="45" cy="58" rx="3" ry="2" fill="#BF360C"/>
+  <path d="M41,62 Q45,66 49,62" stroke="#BF360C" stroke-width="1.5" fill="none"/>
+  <line x1="15" y1="58" x2="35" y2="60" stroke="#555" stroke-width="1"/>
+  <line x1="15" y1="63" x2="35" y2="63" stroke="#555" stroke-width="1"/>
+  <line x1="55" y1="60" x2="72" y2="58" stroke="#555" stroke-width="1"/>
+  <line x1="55" y1="63" x2="72" y2="63" stroke="#555" stroke-width="1"/>
+  <text x="28" y="84" font-family="Arial Black" font-size="16" font-weight="900" fill="#FFD600">^</text>
+  <rect x="52" y="98" width="14" height="24" rx="6" fill="#F9A825" transform="rotate(-20,52,98)"/>
+  <rect x="74" y="98" width="14" height="24" rx="6" fill="#F9A825" transform="rotate(15,74,98)"/>
+  <ellipse cx="45" cy="120" rx="9" ry="5" fill="#E65100"/>
+  <ellipse cx="84" cy="118" rx="9" ry="5" fill="#E65100"/>
+  <polygon points="110,30 102,50 110,47 102,70 118,44 108,47" fill="#FFD600" stroke="#FF6F00" stroke-width="1"/>
+</svg></div>
+
+    <div class="score-bar">
+      <div>
+        <div class="label">SCORE</div>
+        <div class="score-val" style="color:var(--orange)" id="mi-score">0</div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-fill" id="mi-progress" style="width:0%;background:linear-gradient(90deg,var(--orange),#FF5722)"></div>
+      </div>
+      <div>
+        <div class="label">SOLVED</div>
+        <div class="score-val" style="color:var(--orange)" id="mi-solved">0/8</div>
+      </div>
+    </div>
+
+    <div id="mi-grid"></div>
+  </section>
+
+  <!-- ══════════════ EXPLORE SECTION ══════════════ -->
+  <section class="section" id="sec-explore">
+    <div class="sec-head">
+      <h2 style="color:var(--purple)">🔭 Explore!</h2>
+      <p>Some puzzles have <strong>many answers</strong>. How many can you find?</p>
+    </div>
+
+    <div class="explore-intro">
+      <h3>🌟 The Challenge</h3>
+      <p>These puzzles use 1, 2, and 3 in any way you like — there's more than one right answer!
+         Write down every solution you can find. The more, the better!</p>
+    </div>
+
+
+    <!-- Astronaut -->
+    <div class="char-slot"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 130" width="150" height="150">
+  <circle cx="10" cy="15" r="1.5" fill="#FFF9C4"/>
+  <circle cx="115" cy="20" r="2" fill="#FFF9C4"/>
+  <circle cx="20" cy="110" r="1.5" fill="#FFF9C4"/>
+  <circle cx="118" cy="95" r="1.5" fill="#FFF9C4"/>
+  <ellipse cx="65" cy="92" rx="30" ry="32" fill="#ECEFF1"/>
+  <ellipse cx="65" cy="92" rx="22" ry="24" fill="#CFD8DC"/>
+  <circle cx="65" cy="50" r="30" fill="#ECEFF1" stroke="#B0BEC5" stroke-width="2"/>
+  <ellipse cx="65" cy="50" rx="20" ry="22" fill="#1565C0" opacity="0.85"/>
+  <ellipse cx="58" cy="43" rx="5" ry="7" fill="white" opacity="0.3" transform="rotate(-20,58,43)"/>
+  <circle cx="59" cy="49" r="3" fill="white"/>
+  <circle cx="69" cy="49" r="3" fill="white"/>
+  <circle cx="60" cy="50" r="1.5" fill="#333"/>
+  <circle cx="70" cy="50" r="1.5" fill="#333"/>
+  <path d="M57,56 Q64,60 71,56" stroke="white" stroke-width="1.5" fill="none"/>
+  <rect x="10" y="76" width="22" height="14" rx="7" fill="#ECEFF1" transform="rotate(-20,10,76)"/>
+  <rect x="95" y="76" width="22" height="14" rx="7" fill="#ECEFF1" transform="rotate(20,95,76)"/>
+  <circle cx="16" cy="94" r="8" fill="#CFD8DC"/>
+  <circle cx="112" cy="94" r="8" fill="#CFD8DC"/>
+  <circle cx="18" cy="35" r="13" fill="#FF7043" opacity="0.9"/>
+  <text x="18" y="40" text-anchor="middle" font-family="Arial Black" font-size="14" fill="white" font-weight="900">1</text>
+  <circle cx="108" cy="40" r="13" fill="#7B1FA2" opacity="0.9"/>
+  <text x="108" y="45" text-anchor="middle" font-family="Arial Black" font-size="14" fill="white" font-weight="900">2</text>
+  <circle cx="65" cy="15" r="13" fill="#1976D2" opacity="0.9"/>
+  <text x="65" y="20" text-anchor="middle" font-family="Arial Black" font-size="14" fill="white" font-weight="900">3</text>
+  <rect x="46" y="118" width="16" height="12" rx="5" fill="#B0BEC5"/>
+  <rect x="68" y="118" width="16" height="12" rx="5" fill="#B0BEC5"/>
+  <rect x="42" y="127" width="22" height="6" rx="3" fill="#78909C"/>
+  <rect x="64" y="127" width="22" height="6" rx="3" fill="#78909C"/>
+</svg></div>
+    <div id="explore-grid"></div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Dr. UV's Pan Digital Designs™ &nbsp;·&nbsp; <span>Just 1·2·3</span> &nbsp;·&nbsp; Human-authored · Machine-verified</p>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════
+
+const fitbPuzzles = [
+  { id:'P1',  eq:'2 + 1 = □',         blanks:[3],         answers:[[3]],          tag:'easy',   color:'blue',   hint:'What is 2 plus 1?' },
+  { id:'P5',  eq:'□ + 1 = □',         blanks:[2,3],       answers:[[2,3]],        tag:'easy',   color:'blue',   hint:'Think: what number plus 1 gives another 1-2-3 number?' },
+  { id:'P7',  eq:'1□ - 1 = □1',       blanks:[2,1],       answers:[[2,1]],        tag:'medium', color:'green',  hint:'Try putting 2 in the first blank...' },
+  { id:'P8',  eq:'3□ - 1 = □1',       blanks:[2,3],       answers:[[2,3]],        tag:'medium', color:'green',  hint:'32 minus 1 equals what?' },
+  { id:'P9',  eq:'□ - 1 = 12',        blanks:[13],        answers:[[13]],         tag:'easy',   color:'blue',   hint:'What number minus 1 gives 12?' },
+  { id:'P10', eq:'□ + 1 = 23',        blanks:[22],        answers:[[22]],         tag:'easy',   color:'blue',   hint:'What number plus 1 gives 23?' },
+  { id:'P11', eq:'□ - 2 = 11',        blanks:[13],        answers:[[13]],         tag:'easy',   color:'blue',   hint:'11 + 2 = ?' },
+  { id:'P36', eq:'□ + □ = 2²',        blanks:[1,3],       answers:[[1,3],[3,1]],  tag:'hard',   color:'purple', hint:'2² = 4. Find two 1-2-3 numbers that add to 4.' },
+  { id:'P39', eq:'□ - 1 = □³',        blanks:[2,1],       answers:[[2,1]],        tag:'hard',   color:'purple', hint:'1³ = 1. What minus 1 equals 1?' },
+  { id:'P42', eq:'1□ - 3 = □³',       blanks:[1,2],       answers:[[1,2]],        tag:'hard',   color:'purple', hint:'2³ = 8. What two-digit number starting with 1 minus 3 gives 8?' },
+];
+
+const omPuzzles = [
+  { id:'P1',  eq:'12 + 1 = 31', actual:13, rearrange:'31→13', answer:'12+1=13',  disp:'12 + 1 = ??' },
+  { id:'P2',  eq:'13 - 1 = 21', actual:12, rearrange:'21→12', answer:'12',       disp:'13 - 1 = ??' },
+  { id:'P3',  eq:'21 + 2 = 32', actual:23, rearrange:'32→23', answer:'23',       disp:'21 + 2 = ??' },
+  { id:'P4',  eq:'23 - 2 = 12', actual:21, rearrange:'12→21', answer:'21',       disp:'23 - 2 = ??' },
+  { id:'P5',  eq:'32 - 1 = 13', actual:31, rearrange:'13→31', answer:'31',       disp:'32 - 1 = ??' },
+  { id:'P6',  eq:'11 + 1 = 21', actual:12, rearrange:'21→12', answer:'12',       disp:'11 + 1 = ??' },
+  { id:'P8',  eq:'11 + 2 = 31', actual:13, rearrange:'31→13', answer:'13',       disp:'11 + 2 = ??' },
+  { id:'P9',  eq:'33 - 2 = 13', actual:31, rearrange:'13→31', answer:'31',       disp:'33 - 2 = ??' },
+];
+
+const explorePuzzles = [
+  { id:'P17', eq:'□ + □ = 33', label:'Add to 33', hint:'How many ways can two 1-2-3 numbers add up to 33?', solutions:['11+22=33','22+11=33','12+21=33','21+12=33','13+20? No — 20 has a 0!','31+2=33 ✓','3+30? No...','Try: 11+22, 21+12, 31+2, 30+3?'] },
+  { id:'P25', eq:'□ + □ = □',  label:'All Additions', hint:'Pick ANY 1-2-3 numbers! Write as many equations as you can.', solutions:['1+1=2','1+2=3','2+1=3','1+11=12','1+12=13','11+1=12','11+2=13','12+1=13','2+1=3','3+1=? ...and many more!'] },
+  { id:'P28', eq:'□ × 1 = □',  label:'Times One', hint:'Any number times 1 equals itself! List all the 1-2-3 answers.', solutions:['1×1=1','2×1=2','3×1=3','11×1=11','12×1=12','13×1=13','21×1=21','22×1=22','23×1=23','31×1=31','32×1=32','33×1=33'] },
+];
+
+// ══════════════════════════════════════════════
+//  FITB BUILDER
+// ══════════════════════════════════════════════
+let fitbState = {};
+let fitbSolvedCount = 0;
+
+function buildFITB() {
+  const grid = document.getElementById('fitb-grid');
+  fitbPuzzles.forEach((p, idx) => {
+    fitbState[p.id] = { solved: false, selected: null };
+    const card = document.createElement('div');
+    card.className = `pcard ${p.color}`;
+    card.id = `card-fitb-${p.id}`;
+
+    // Build equation display with clickable blank
+    let eqHtml = p.eq.replace('□', `<span class="blank" id="blank-${p.id}" onclick="selectBlank('${p.id}')">?</span>`);
+    // Handle double blanks
+    let blankCount = 0;
+    eqHtml = p.eq.replace(/□/g, () => {
+      const n = blankCount++;
+      return `<span class="blank" id="blank-${p.id}-${n}" onclick="selectBlank('${p.id}',${n})">?</span>`;
+    });
+
+    card.innerHTML = `
+      <div class="pcard-num">${p.id}</div>
+      <span class="pcard-tag tag-${p.tag}">${p.tag}</span>
+      <div class="pcard-eq" id="eq-${p.id}">${eqHtml}</div>
+      <div class="pcard-hint" id="hint-${p.id}">${p.hint}</div>
+      <div class="numpad">
+        <button class="npbtn n1" onclick="enterDigit('${p.id}',1)">1</button>
+        <button class="npbtn n2" onclick="enterDigit('${p.id}',2)">2</button>
+        <button class="npbtn n3" onclick="enterDigit('${p.id}',3)">3</button>
+        <button class="npbtn clr" onclick="clearBlank('${p.id}')">✕</button>
+      </div>
+      <button class="check-btn" onclick="checkFITB('${p.id}')">✓ Check Answer</button>
+      <div class="solved-badge">🌟<br>Correct!<br><span style="font-size:14px">+10 pts</span></div>
+    `;
+    grid.appendChild(card);
+    fitbState[p.id].inputs = new Array(p.blanks.length).fill(null);
+    fitbState[p.id].activeBlank = 0;
+  });
+  document.getElementById('fitb-solved').textContent = `0/${fitbPuzzles.length}`;
+}
+
+function selectBlank(id, n=0) {
+  fitbState[id].activeBlank = n;
+  // highlight active
+  document.querySelectorAll(`[id^="blank-${id}"]`).forEach((el,i) => {
+    el.style.borderStyle = (i===n) ? 'solid' : 'dashed';
+    el.style.borderColor = (i===n) ? '#2196F3' : '#FFC107';
+  });
+}
+
+function enterDigit(id, d) {
+  const p = fitbPuzzles.find(x=>x.id===id);
+  const n = fitbState[id].activeBlank || 0;
+  if (fitbState[id].solved) return;
+
+  // For two-digit blanks we need special handling
+  const blankEl = document.querySelector(`#blank-${id}-${n}`) || document.querySelector(`#blank-${id}`);
+  const curVal = fitbState[id].inputs[n];
+
+  // Single char answers: just replace
+  // Multi-digit: allow building up to 2 digits
+  let newVal;
+  if (curVal === null) { newVal = d; }
+  else if (String(curVal).length < 2) { newVal = parseInt(String(curVal) + d); }
+  else { newVal = d; }
+
+  fitbState[id].inputs[n] = newVal;
+  if (blankEl) {
+    blankEl.textContent = newVal;
+    blankEl.className = 'blank filled';
+  }
+  // auto advance
+  if (p.blanks.length > 1 && n < p.blanks.length - 1) {
+    fitbState[id].activeBlank = n + 1;
+    selectBlank(id, n + 1);
+  }
+}
+
+function clearBlank(id) {
+  const n = fitbState[id].activeBlank || 0;
+  fitbState[id].inputs[n] = null;
+  const blankEl = document.querySelector(`#blank-${id}-${n}`) || document.querySelector(`#blank-${id}`);
+  if (blankEl) { blankEl.textContent = '?'; blankEl.className = 'blank'; }
+}
+
+function checkFITB(id) {
+  if (fitbState[id].solved) return;
+  const p = fitbPuzzles.find(x=>x.id===id);
+  const inputs = fitbState[id].inputs;
+
+  const correct = p.answers.some(ans => ans.every((a,i) => String(inputs[i]) === String(a)));
+
+  if (correct) {
+    fitbState[id].solved = true;
+    fitbSolvedCount++;
+    document.getElementById(`card-fitb-${p.id}`).classList.add('solved');
+    updateFITBScore();
+    spawnConfetti();
+  } else {
+    // shake blanks
+    document.querySelectorAll(`[id^="blank-${id}"]`).forEach(el => {
+      el.className = 'blank wrong';
+      setTimeout(() => el.className = 'blank filled', 500);
+    });
+    document.getElementById(`hint-${id}`).textContent = '❌ Not quite — try again!';
+    setTimeout(() => {
+      document.getElementById(`hint-${id}`).textContent = p.hint;
+    }, 1500);
+  }
+}
+
+function updateFITBScore() {
+  const s = fitbSolvedCount * 10;
+  document.getElementById('fitb-score').textContent = s;
+  document.getElementById('fitb-solved').textContent = `${fitbSolvedCount}/${fitbPuzzles.length}`;
+  document.getElementById('fitb-progress').style.width = `${(fitbSolvedCount/fitbPuzzles.length)*100}%`;
+}
+
+// ══════════════════════════════════════════════
+//  ONE-MOVE BUILDER
+// ══════════════════════════════════════════════
+let omSolvedCount = 0;
+
+function buildOM() {
+  const grid = document.getElementById('om-grid');
+  omPuzzles.forEach((p) => {
+    const card = document.createElement('div');
+    card.className = 'om-card';
+    card.id = `card-om-${p.id}`;
+
+    const parts = p.eq.split('=');
+    const lhs = parts[0].trim();
+
+    card.innerHTML = `
+      <div class="om-num">${p.id}</div>
+      <div class="om-false">${p.eq}</div>
+      <div class="om-question">
+        Rearrange the digits of <strong>${p.actual > 9 ? p.actual : '0'+p.actual}</strong> — what do you get?
+      </div>
+      <div class="om-inputs">
+        <span style="font-family:'Fredoka One',sans-serif;font-size:24px;">${lhs} = </span>
+        <input class="om-input" id="om-inp-${p.id}" maxlength="2"
+               oninput="omInput('${p.id}')" placeholder="??" type="text" inputmode="numeric">
+      </div>
+      <button class="om-check" onclick="checkOM('${p.id}')">✓ Check</button>
+      <div class="om-feedback" id="om-fb-${p.id}"></div>
+    `;
+    grid.appendChild(card);
+  });
+  document.getElementById('om-solved').textContent = `0/${omPuzzles.length}`;
+}
+
+function omInput(id) {
+  const inp = document.getElementById(`om-inp-${id}`);
+  inp.className = 'om-input';
+}
+
+function checkOM(id) {
+  const p = omPuzzles.find(x=>x.id===id);
+  const inp = document.getElementById(`om-inp-${id}`);
+  const fb  = document.getElementById(`om-fb-${id}`);
+  const val = inp.value.trim();
+
+  if (val === String(p.actual)) {
+    inp.className = 'om-input correct';
+    fb.className = 'om-feedback ok';
+    fb.textContent = `🌟 Yes! ${p.answer} ✓  The move was: ${p.rearrange}`;
+    document.getElementById(`card-om-${p.id}`).classList.add('solved');
+    omSolvedCount++;
+    updateOMScore();
+    spawnConfetti();
+  } else {
+    inp.className = 'om-input incorrect';
+    fb.className = 'om-feedback bad';
+    fb.textContent = `❌ Not quite! Hint: rearrange ${p.actual} (${p.rearrange.split('→')[0]})`;
+    setTimeout(() => { inp.className = 'om-input'; fb.textContent = ''; }, 2000);
+  }
+}
+
+function updateOMScore() {
+  const s = omSolvedCount * 15;
+  document.getElementById('om-score').textContent = s;
+  document.getElementById('om-solved').textContent = `${omSolvedCount}/${omPuzzles.length}`;
+  document.getElementById('om-progress').style.width = `${(omSolvedCount/omPuzzles.length)*100}%`;
+}
+
+// ══════════════════════════════════════════════
+//  EXPLORE BUILDER
+// ══════════════════════════════════════════════
+function buildExplore() {
+  const grid = document.getElementById('explore-grid');
+  explorePuzzles.forEach((p) => {
+    const card = document.createElement('div');
+    card.className = 'open-puzzle';
+    card.innerHTML = `
+      <h4>${p.label}</h4>
+      <p>${p.hint}</p>
+      <div class="open-eq">${p.eq}</div>
+      <div class="answers-area" id="ans-${p.id}">
+        <em style="opacity:.5;font-family:Nunito,sans-serif;font-size:14px;">Click "Show Answers" to reveal all solutions...</em>
+      </div>
+      <button class="find-btn" onclick="showAnswers('${p.id}')">🔍 Show Answers</button>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function showAnswers(id) {
+  const p = explorePuzzles.find(x=>x.id===id);
+  const el = document.getElementById(`ans-${id}`);
+  el.innerHTML = p.solutions.join('<br>');
+}
+
+// ══════════════════════════════════════════════
+//  CONFETTI
+// ══════════════════════════════════════════════
+function spawnConfetti() {
+  const colors = ['#FFD54F','#A5D6A7','#F48FB1','#90CAF9','#CE93D8','#FFCC80'];
+  for (let i = 0; i < 24; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDelay = Math.random() * .5 + 's';
+    c.style.animationDuration = (1 + Math.random()) + 's';
+    c.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 2000);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════════
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelector('[data-tab="'+name+'"]').classList.add('active');
+  document.getElementById('sec-'+name).classList.add('active');
+}
+
+
+// ══════════════════════════════════════════════
+//  MOVE IT DATA
+//  Each puzzle: false eq shown, allowed ops,
+//  answer display (with HTML sup tags), numeric check
+// ══════════════════════════════════════════════
+const miPuzzles = [
+  {
+    id:'MI-1', tier:'1move', tierLabel:'One Move',
+    false_eq:'1 + 23 = 23',
+    allowed:'( ^ )',
+    hint:'Move the 3 in "23" up to become a power on both 2 and 3.',
+    answer_html:'1 + 2<sup>3</sup> = 3<sup>2</sup>',
+    check: () => { return true; }, // shown as reveal
+    lhs_val: 9, rhs_val: 9,
+    explain:'2³ = 8 and 3² = 9 ... wait: 1+2³ = 1+8 = 9 = 3² ✓'
+  },
+  {
+    id:'MI-2', tier:'1move', tierLabel:'One Move',
+    false_eq:'1 + 2 = 3',
+    allowed:'( ^ )',
+    hint:'Make the 3 on the right a power. What power of what gives 1+2?',
+    answer_html:'1 + 2 = 3<sup>1</sup>',
+    lhs_val:3, rhs_val:3,
+    explain:'3¹ = 3, and 1+2 = 3 ✓ Simple but elegant!'
+  },
+  {
+    id:'MI-3', tier:'1move', tierLabel:'One Move',
+    false_eq:'1 + 2 + 3 = 12',
+    allowed:'( ^ )',
+    hint:'What if you make one of those digits a power?',
+    answer_html:'1<sup>2</sup> + 3 = 1 + 3',
+    lhs_val:4, rhs_val:4,
+    explain:'Actually: 1² + 3 = 1 + 3 = 4. Or try: 1 + 2 + 3 = 1·2·3 = 6? Many paths!'
+  },
+  {
+    id:'MI-4', tier:'1move', tierLabel:'One Move',
+    false_eq:'13 - 1 = 2',
+    allowed:'( ^ )',
+    hint:'Move the 1 in "13" to become a power — what does 3¹ equal?',
+    answer_html:'3<sup>1</sup> - 1 = 2',
+    lhs_val:2, rhs_val:2,
+    explain:'3¹ = 3. So 3¹ - 1 = 3 - 1 = 2 ✓'
+  },
+  {
+    id:'MI-5', tier:'2move', tierLabel:'Two Moves',
+    false_eq:'12 + 3 = 13',
+    allowed:'( ^ √ )',
+    hint:'Move the 2 in 12 up, AND move something on the right too.',
+    answer_html:'1<sup>2</sup> + 3 = 1<sup>3</sup> + 3',
+    lhs_val:4, rhs_val:4,
+    explain:'1²=1 and 1³=1 so both sides = 1+3 = 4 ✓'
+  },
+  {
+    id:'MI-6', tier:'2move', tierLabel:'Two Moves',
+    false_eq:'21 + 3 = 23',
+    allowed:'( ^ )',
+    hint:'Can you make the left side equal the right using exponents?',
+    answer_html:'2<sup>1</sup> + 3 = 2 + 3',
+    lhs_val:5, rhs_val:5,
+    explain:'2¹ = 2. So 2¹ + 3 = 2 + 3 = 5. But right side 23 → 2+3? Think of it as "2 and 3" = 5!'
+  },
+  {
+    id:'MI-7', tier:'exp', tierLabel:'Exponent Challenge',
+    false_eq:'1 + 23 = 32',
+    allowed:'( ^ )',
+    hint:'Classic! Move a digit up on BOTH sides.',
+    answer_html:'1 + 2<sup>3</sup> = 3<sup>2</sup>',
+    lhs_val:9, rhs_val:9,
+    explain:'1 + 2³ = 1 + 8 = 9 = 3² ✓ This is THE Just 123 signature puzzle!'
+  },
+  {
+    id:'MI-8', tier:'exp', tierLabel:'Exponent Challenge',
+    false_eq:'3 - 2 = 1',
+    allowed:'( ^ ! )',
+    hint:'This one IS true already — but can you make a harder version? Try: 3² - 2 = ?',
+    answer_html:'3<sup>2</sup> - 2<sup>3</sup> = 1',
+    lhs_val:1, rhs_val:1,
+    explain:'3² - 2³ = 9 - 8 = 1 ✓ Two exponents, one elegant answer!'
+  },
+];
+
+let miSolvedCount = 0;
+let miHintShown = {};
+let miRevealed = {};
+
+function buildMoveIt() {
+  const grid = document.getElementById('mi-grid');
+  miPuzzles.forEach(p => {
+    miHintShown[p.id] = false;
+    miRevealed[p.id] = false;
+
+    const card = document.createElement('div');
+    card.className = 'mi-card';
+    card.id = `card-mi-${p.id}`;
+
+    card.innerHTML = `
+      <div class="mi-num">${p.id}</div>
+      <span class="mi-tier tier-${p.tier}">${p.tierLabel}</span>
+      <div class="mi-false">${p.false_eq}</div>
+      <div class="mi-allowed">Allowed moves: <strong>${p.allowed}</strong></div>
+      <div class="mi-answer-row" id="mi-ansrow-${p.id}">
+        <div style="font-family:'Fredoka One',sans-serif;font-size:15px;color:var(--soft);">
+          Write your answer below, then reveal to check:
+        </div>
+      </div>
+      <div style="text-align:center;padding:8px 0;">
+        <div id="mi-reveal-${p.id}" style="display:none;font-family:'Fredoka One',sans-serif;font-size:28px;color:var(--greendk);">
+          ${p.answer_html}
+        </div>
+        <div id="mi-explain-${p.id}" style="display:none;font-size:12px;color:var(--soft);font-weight:600;margin-top:6px;">
+          ${p.explain}
+        </div>
+      </div>
+      <button class="mi-check" onclick="revealMI('${p.id}')">👁 Reveal Answer</button>
+      <button class="mi-hint-btn" onclick="showMIHint('${p.id}')">💡 Need a hint?</button>
+      <div class="mi-hint-text" id="mi-hint-${p.id}"></div>
+    `;
+    grid.appendChild(card);
+  });
+  document.getElementById('mi-solved').textContent = `0/${miPuzzles.length}`;
+}
+
+function revealMI(id) {
+  if (miRevealed[id]) return;
+  miRevealed[id] = true;
+  document.getElementById(`mi-reveal-${id}`).style.display = 'block';
+  document.getElementById(`mi-explain-${id}`).style.display = 'block';
+  document.getElementById(`card-mi-${id}`).classList.add('solved');
+  document.querySelector(`#card-mi-${id} .mi-check`).textContent = '✓ Revealed!';
+  document.querySelector(`#card-mi-${id} .mi-check`).style.background = 'var(--green)';
+  miSolvedCount++;
+  updateMIScore();
+  spawnConfetti();
+}
+
+function showMIHint(id) {
+  const p = miPuzzles.find(x=>x.id===id);
+  const el = document.getElementById(`mi-hint-${id}`);
+  el.textContent = miHintShown[id] ? '' : '💡 ' + p.hint;
+  miHintShown[id] = !miHintShown[id];
+}
+
+function updateMIScore() {
+  document.getElementById('mi-score').textContent = miSolvedCount * 20;
+  document.getElementById('mi-solved').textContent = `${miSolvedCount}/${miPuzzles.length}`;
+  document.getElementById('mi-progress').style.width = `${(miSolvedCount/miPuzzles.length)*100}%`;
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+buildFITB();
+buildOM();
+buildExplore();
+buildMoveIt();
+</script>
+
+</body>
+</html>

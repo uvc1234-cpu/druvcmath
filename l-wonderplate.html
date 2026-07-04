@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr. UV's Math Universe — Wonder Plate (v4 · Collections)</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Pinyon+Script&display=swap');
+
+:root{
+  --parch1:#f6ecd0; --parch2:#e9d4a2; --parch3:#cfae6e; --parch-edge:#b8965a;
+  --ink:#2a2013; --ink-soft:#6a583a; --indigo:#21406a; --indigo-dk:#162a47;
+  --verd:#3f6f5d; --verd-dk:#264a3d; --verd-lt:#5d9079;
+  --gilt:#b3893a; --gilt-lt:#e0bd6b; --gilt-dk:#7a5a23;
+  --wax:#9c5333; --wax-dk:#5f2f18;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100vh; padding:30px 16px;
+  background:
+    radial-gradient(120% 110% at 50% 18%, #1d3b34 0%, #122722 48%, #0a1713 100%);
+  display:flex; flex-direction:column; align-items:center; gap:22px;
+  font-family:'EB Garamond',Georgia,serif; color:var(--ink);
+}
+
+/* ===================== THE PLATE ===================== */
+.stage{
+  position:relative; width:840px; height:600px; max-width:100%;
+  display:flex; align-items:center; justify-content:center;
+}
+.plate{
+  position:absolute; top:0;right:0;bottom:0;left:0; border-radius:5px; overflow:hidden;
+  background:
+    radial-gradient(125% 120% at 50% 34%, var(--parch1) 0%, var(--parch2) 64%, var(--parch3) 100%);
+  box-shadow:0 26px 60px rgba(0,0,0,.55), inset 0 0 120px rgba(120,80,30,.32);
+}
+/* aged fibre + foxing texture */
+.plate::before{
+  content:""; position:absolute; top:0;right:0;bottom:0;left:0; pointer-events:none; mix-blend-mode:multiply; opacity:.5;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23f)' opacity='0.05'/></svg>");
+}
+/* edge vignette / scorch */
+.plate::after{
+  content:""; position:absolute; top:0;right:0;bottom:0;left:0; pointer-events:none;
+  background:radial-gradient(120% 120% at 50% 46%, transparent 58%, rgba(96,60,22,.30) 100%);
+}
+
+/* ghosted orrery behind the wonder */
+.orrery{position:absolute; top:0;right:0;bottom:0;left:0; width:100%; height:100%; opacity:.18; pointer-events:none;}
+
+/* gilt double rule frame */
+.frame{
+  position:absolute; top:22px;right:22px;bottom:22px;left:22px; border:2.5px solid var(--gilt);
+  box-shadow:inset 0 0 0 4px rgba(255,250,235,.30), inset 0 0 0 5.5px var(--gilt-dk);
+  border-radius:3px;
+}
+.frame::after{content:""; position:absolute; top:8px;right:8px;bottom:8px;left:8px; border:1px solid rgba(120,80,30,.45); border-radius:2px;}
+
+/* engraved corner flourishes */
+.corner{position:absolute; width:96px; height:96px; pointer-events:none; color:var(--gilt-dk); opacity:.92;}
+.corner.tl{top:18px;left:18px;}
+.corner.tr{top:18px;right:18px; transform:scaleX(-1);}
+.corner.bl{bottom:18px;left:18px; transform:scaleY(-1);}
+.corner.br{bottom:18px;right:18px; transform:scale(-1,-1);}
+
+/* content column */
+.leaf{position:absolute; top:40px;bottom:40px;left:54px;right:54px; display:flex; flex-direction:column; align-items:center; text-align:center;}
+
+.datemark{position:absolute; left:2px; top:-6px; font-family:'Pinyon Script',cursive; color:var(--indigo); font-size:40px; line-height:.8; filter:drop-shadow(0 1px 0 rgba(255,255,255,.5));}
+.datemark .sl{display:block; width:46px; height:1.5px; background:var(--indigo); transform:rotate(-16deg); margin:-2px auto;}
+
+.seal{position:absolute; top:-30px; left:50%; transform:translateX(-50%); z-index:5;}
+
+.eyebrow{margin-top:78px; font-family:'Cinzel',serif; font-weight:600; letter-spacing:5px; font-size:12.5px; color:var(--ink-soft);}
+.eyebrow::before,.eyebrow::after{content:"·"; margin:0 10px; color:var(--gilt-dk);}
+
+.title{margin-top:8px; font-family:'Cinzel',serif; font-weight:700; font-size:30px; letter-spacing:2px; color:var(--indigo); line-height:1.05; text-shadow:0 1px 0 rgba(255,255,255,.5);}
+.subtitle{margin-top:3px; font-family:'EB Garamond',serif; font-style:italic; font-size:17px; color:var(--ink-soft); letter-spacing:.4px;}
+
+/* engraved rule with a center diamond */
+.rule{display:flex; align-items:center; justify-content:center; gap:10px; width:74%; margin:16px 0 10px;}
+.rule .ln{flex:1; height:1.5px; background:linear-gradient(90deg, transparent, var(--gilt-dk) 18%, var(--gilt-dk) 82%, transparent);}
+.rule .dia{width:8px; height:8px; background:var(--gilt-dk); transform:rotate(45deg);}
+
+/* the HERO equation */
+.wonderbox{flex:1; width:100%; display:flex; align-items:center; justify-content:center; padding:2px 6px; min-height:120px;}
+.wonder{color:var(--ink); font-size:42px; line-height:1.05;}
+.wonder .katex{color:var(--ink);}
+
+.caption{font-family:'EB Garamond',serif; font-style:italic; font-size:16px; color:var(--ink-soft); margin-top:2px; min-height:22px;}
+
+.colophon{position:absolute; bottom:-2px; left:50%; transform:translateX(-50%); color:var(--gilt-dk); font-size:22px; opacity:.8; letter-spacing:6px;}
+
+/* ===== SIGNATURE: the live VERIFIED wax seal ===== */
+.vseal{
+  position:absolute; right:6px; bottom:4px; width:96px; height:96px; z-index:6;
+  opacity:0; transform:rotate(-9deg) scale(.7); transition:opacity .35s ease, transform .35s ease;
+  filter:drop-shadow(0 3px 4px rgba(0,0,0,.35));
+}
+.vseal.show{opacity:1; transform:rotate(-9deg) scale(1);}
+.vseal .val{position:absolute; top:0;right:0;bottom:0;left:0; display:flex; align-items:flex-end; justify-content:center; padding-bottom:17px;
+  font-family:'Cinzel',serif; font-weight:700; font-size:12px; color:#eafff2; letter-spacing:.5px;}
+
+/* ===================== EDITOR ===================== */
+.editor{width:840px; max-width:100%; background:#10271f; border:1px solid #2c5042; border-radius:13px; padding:18px 20px; color:#e3f1ea; font-family:system-ui,sans-serif;}
+.editor h4{margin:0 0 13px; font-family:'Cinzel',serif; color:#e9cf94; letter-spacing:.5px; font-size:14px; font-weight:600;}
+.presets{display:flex; gap:8px; flex-wrap:wrap; margin:0 0 14px;}
+.chip{cursor:pointer; border:1px solid #356b58; background:#143a30; color:#cfe9dd; border-radius:20px; padding:6px 13px; font-size:12.5px; font-family:'EB Garamond',serif; font-weight:500;}
+.chip:hover{background:#1c4d3e;}
+.row{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px;}
+.field{flex:1; min-width:140px;}
+.field.sm{flex:0 0 88px; min-width:88px;}
+.field label{display:block; font-size:10.5px; text-transform:uppercase; letter-spacing:.7px; color:#8db5a5; margin-bottom:5px;}
+.field input{width:100%; padding:9px 11px; border-radius:7px; border:1px solid #2f5a4a; background:#0a2019; color:#eafff5; font-size:14px; font-family:ui-monospace,monospace;}
+.field input:focus{outline:none; border-color:#5fae93;}
+
+/* insert palette — click, don't type */
+.palette{display:flex; gap:7px; flex-wrap:wrap; margin:0 0 10px;}
+.palette button{cursor:pointer; border:1px solid #3a6b59; background:#10342a; color:#dff3ea; border-radius:7px; padding:6px 10px; font-size:14px; font-family:'KaTeX_Main','Times New Roman',serif; min-width:38px;}
+.palette button:hover{background:#185143;}
+.palette button small{font-family:system-ui,sans-serif; font-size:10px; color:#8db5a5; display:block; margin-top:1px;}
+
+.vstat{margin:2px 0 4px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px; border-radius:8px; padding:9px 12px;}
+.vstat.ok{background:#123a2b; color:#85e6b5; border:1px solid #2e6b50;}
+.vstat.bad{background:#3a1717; color:#ffb3b3; border:1px solid #6b2e2e;}
+.vstat.warn{background:#3a3217; color:#f0d79a; border:1px solid #6b5a2e;}
+.vstat .dot{font-size:15px;}
+
+.hint{font-size:11.5px; color:#9cc3b3; line-height:1.6; margin-top:8px;}
+.hint code{background:#0a2019; padding:1px 6px; border-radius:4px; color:#ecd398; font-family:ui-monospace,monospace;}
+.btns{margin-top:13px;}
+.btns button{cursor:pointer; border:none; border-radius:8px; padding:10px 16px; font-size:13px; font-weight:600; background:#1f4a3c; color:#dff0e8; border:1px solid #356b58;}
+
+.clean-warn{display:none;}
+body.clean .editor{display:none;}
+body.clean .clean-warn.show{display:flex; align-items:center; gap:8px; position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:99;
+  background:#3a1717; color:#ffb3b3; border:1px solid #6b2e2e; border-radius:9px; padding:9px 16px; font-family:system-ui,sans-serif; font-size:13px; font-weight:600;}
+body.clean{padding-top:40px;}
+</style>
+</head>
+<body>
+  <div class="clean-warn" id="cleanWarn"></div>
+
+  <div class="stage">
+    <div class="plate">
+      <!-- ghosted Galilean orrery -->
+      <svg class="orrery" viewBox="0 0 840 600" preserveAspectRatio="xMidYMid meet">
+        <g fill="none" stroke="#7a5526" stroke-width="1">
+          <circle cx="420" cy="330" r="150"/><circle cx="420" cy="330" r="108"/><circle cx="420" cy="330" r="66"/>
+          <ellipse cx="420" cy="330" rx="186" ry="92"/>
+          <ellipse cx="420" cy="330" rx="92" ry="186" transform="rotate(26 420 330)"/>
+          <circle cx="420" cy="330" r="208"/>
+          <circle cx="420" cy="330" r="4" fill="#7a5526"/>
+        </g>
+      </svg>
+
+      <div class="frame"></div>
+      <!-- corner filigree -->
+      <svg class="corner tl" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.4">
+        <path d="M6 46 C6 20 20 6 46 6"/><path d="M14 50 C14 26 26 14 50 14" opacity=".7"/>
+        <path d="M10 14 C30 16 40 26 42 46" opacity=".55"/><circle cx="10" cy="10" r="3.2" fill="currentColor" stroke="none"/>
+        <path d="M22 8 q10 2 12 12" opacity=".6"/>
+      </svg>
+      <svg class="corner tr" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.4">
+        <path d="M6 46 C6 20 20 6 46 6"/><path d="M14 50 C14 26 26 14 50 14" opacity=".7"/>
+        <path d="M10 14 C30 16 40 26 42 46" opacity=".55"/><circle cx="10" cy="10" r="3.2" fill="currentColor" stroke="none"/>
+        <path d="M22 8 q10 2 12 12" opacity=".6"/>
+      </svg>
+      <svg class="corner bl" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.4">
+        <path d="M6 46 C6 20 20 6 46 6"/><path d="M14 50 C14 26 26 14 50 14" opacity=".7"/>
+        <path d="M10 14 C30 16 40 26 42 46" opacity=".55"/><circle cx="10" cy="10" r="3.2" fill="currentColor" stroke="none"/>
+        <path d="M22 8 q10 2 12 12" opacity=".6"/>
+      </svg>
+      <svg class="corner br" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.4">
+        <path d="M6 46 C6 20 20 6 46 6"/><path d="M14 50 C14 26 26 14 50 14" opacity=".7"/>
+        <path d="M10 14 C30 16 40 26 42 46" opacity=".55"/><circle cx="10" cy="10" r="3.2" fill="currentColor" stroke="none"/>
+        <path d="M22 8 q10 2 12 12" opacity=".6"/>
+      </svg>
+
+      <div class="leaf">
+        <div class="datemark" id="datemark"></div>
+
+        <!-- copper seal with running number -->
+        <div class="seal">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <defs>
+              <radialGradient id="cop" cx="40%" cy="34%" r="74%">
+                <stop offset="0%" stop-color="#f4cf9c"/><stop offset="46%" stop-color="#bf7a3a"/><stop offset="100%" stop-color="#6a3a18"/>
+              </radialGradient>
+              <path id="ring" d="M60,60 m -40,0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0"/>
+            </defs>
+            <circle cx="60" cy="60" r="54" fill="url(#cop)" stroke="#5b3213" stroke-width="3"/>
+            <circle cx="60" cy="60" r="46" fill="none" stroke="#5b3213" stroke-width="1.3" opacity=".65"/>
+            <text font-family="Cinzel,serif" font-size="9" font-weight="700" fill="#3a1f0c" letter-spacing="2.2">
+              <textPath href="#ring" startOffset="3%">★ DR · UV'S · MATH · UNIVERSE ★</textPath>
+            </text>
+            <circle cx="60" cy="60" r="25" fill="#74421d" stroke="#3a1f0c" stroke-width="1.3"/>
+            <text id="sealNo" x="60" y="67" text-anchor="middle" font-family="Cinzel,serif" font-weight="700" font-size="17" fill="#f6d3a0">257</text>
+          </svg>
+        </div>
+
+        <div class="eyebrow" id="eyebrow">PAN DIGITAL</div>
+        <div class="title" id="title">MATHEMATICAL WONDERS</div>
+        <div class="subtitle" id="subtitle"></div>
+
+        <div class="rule"><span class="ln"></span><span class="dia"></span><span class="ln"></span></div>
+        <div class="wonderbox"><div class="wonder" id="wonder"></div></div>
+        <div class="rule"><span class="ln"></span><span class="dia"></span><span class="ln"></span></div>
+
+        <div class="caption" id="caption"></div>
+        <div class="colophon">∞</div>
+
+        <!-- SIGNATURE: live verified wax seal -->
+        <div class="vseal" id="vseal">
+          <svg width="96" height="96" viewBox="0 0 100 100">
+            <defs>
+              <radialGradient id="wax" cx="40%" cy="35%" r="72%">
+                <stop offset="0%" stop-color="#6fae91"/><stop offset="55%" stop-color="#3f6f5d"/><stop offset="100%" stop-color="#21443a"/>
+              </radialGradient>
+            </defs>
+            <g id="waxStar"></g>
+            <circle cx="50" cy="50" r="36" fill="url(#wax)" stroke="#1c3a30" stroke-width="2"/>
+            <circle cx="50" cy="50" r="30" fill="none" stroke="#c9e6d8" stroke-width="1" opacity=".55"/>
+            <path d="M38 50 l8 9 16 -19" fill="none" stroke="#eafff2" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="50" y="26" text-anchor="middle" font-family="Cinzel,serif" font-size="8" font-weight="700" fill="#eafff2" letter-spacing="1.5">VERIFIED</text>
+          </svg>
+          <div class="val" id="vsealVal"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="editor">
+    <h4>WONDER PLATE — the art is locked; your verified math is the hero</h4>
+    <div class="presets" id="presets"></div>
+
+    <div class="row">
+      <div class="field sm"><label>Date</label><input id="inDate" value="5/26"></div>
+      <div class="field sm"><label>No.</label><input id="inNo" value="257"></div>
+      <div class="field"><label>Eyebrow / genre</label><input id="inEye" value="PAN DIGITAL"></div>
+      <div class="field"><label>Title</label><input id="inTitle" value="MATHEMATICAL WONDERS"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Subtitle</label><input id="inSub" value="A True Ascending Pan-10"></div>
+      <div class="field"><label>Caption</label><input id="inCap" value="digits 0–9, once each"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Equation</label><input id="inEq" value="sqrt{12*3} * 4 = -56 + 78 + sqrt{9} - 0!"></div>
+    </div>
+
+    <div class="palette" id="palette"></div>
+    <div class="vstat" id="vstat"><span class="dot">·</span><span id="vmsg">checking…</span></div>
+
+    <div class="hint">
+      <code>sqrt{ }</code> root · <code>root{5}{32}</code> nth root · <code>frac{1}{2}</code> fraction ·
+      <code>^{ }</code> power (towers ok: <code>2^{3^2}</code>) · <code>bar{5}</code> vinculum · <code>*</code> → × · <code>!</code> factorial.
+      The wax seal stamps only when both sides balance.
+    </div>
+    <div class="btns">
+      <button id="btnClean">⛶ Hide panel — then capture the plate</button>
+    </div>
+  </div>
+
+<script>
+(function(){
+  var presets=[
+    {n:"Pan Digital",  d:"5/26", no:"257", ey:"PAN DIGITAL",  t:"MATHEMATICAL WONDERS", su:"A True Ascending Pan-10", cp:"digits 0\u20139, once each", e:"sqrt{12*3} * 4 = -56 + 78 + sqrt{9} - 0!"},
+    {n:"Pan-10 (no root)", d:"5/26", no:"258", ey:"PAN DIGITAL", t:"THE THIRTY-TWO", su:"One through nine, in their order", cp:"both sides = 32", e:"1 * 2^3 * 4 = -56 + 78 + 9 + 0!"},
+
+    {n:"EE \u00b7 \u221b512 selfie", d:"6/16", no:"512", ey:"ELEGANT EXPRESSIONS", t:"THE DIGIT SUM", su:"A cube root equal to its own digit sum", cp:"5 + 1 + 2 = 8", e:"root{3}{512} = 5+1+2"},
+    {n:"EE \u00b7 \u221a\u221a625 mirror", d:"6/16", no:"625", ey:"ELEGANT EXPRESSIONS", t:"THE DOUBLE ROOT", su:"The digits 2 and 5, each twice", cp:"two 5s survive, the 2s cancel", e:"sqrt{sqrt{625}} = 2+5-2-5+5"},
+
+    {n:"64 \u00b7 square", d:"6/16", no:"064", ey:"THE 64 PAIR", t:"ROOTED TWICE \u2014 SQUARE", su:"Square root, from the digits 6 and 4", cp:"6 + \u221a4 = 8", e:"sqrt{64} = 6+sqrt{4}"},
+    {n:"64 \u00b7 cube",   d:"6/16", no:"064", ey:"THE 64 PAIR", t:"ROOTED TWICE \u2014 CUBE", su:"Cube root, from the same two digits", cp:"6 \u2212 \u221a4 = 4", e:"root{3}{64} = 6-sqrt{4}"},
+
+    {n:"Repdigit \u00b7 Twos", d:"6/16", no:"222", ey:"REPDIGIT FAMILY", t:"THE ALL-TWOS", su:"Every symbol a two", cp:"222 \u2212 2 \u2212 2 \u2212 2 = 216 = 6\u00b3", e:"root{3}{222-2-2-2} = 2+2+2"},
+    {n:"Repdigit \u00b7 Threes II", d:"6/16", no:"333", ey:"REPDIGIT FAMILY", t:"THE SECOND THREE", su:"A longer all-threes", cp:"333 \u2212 3 \u2212 3 \u2212 3 = 324 = 18\u00b2", e:"sqrt{333-3-3-3} = 3*3*sqrt{3-3+4}"},
+    {n:"Repdigit \u00b7 Nines II", d:"6/16", no:"099", ey:"REPDIGIT FAMILY", t:"THE NINES, FOURTH-ROOTED", su:"A second root on the nines", cp:"99 \u2212 9 \u2212 9 = 81 = 3\u2074", e:"root{4}{99-9-9} = sqrt{9-9+9}"},
+
+    {n:"Variable index", d:"5/26", no:"259", ey:"VARIABLE INDEX", t:"THE NESTED ROOT", su:"A root inside a root", cp:"the fifth root, gently hidden", e:"sqrt{root{5}{32} + 7} = 3"},
+    {n:"Power tower",   d:"5/26", no:"260", ey:"TOWERS", t:"THE LITTLE TOWER", su:"Two, raised to three, raised to two", cp:"a tower equal to 512", e:"2^{3^2} = 512"},
+    {n:"Ninth power",   d:"6/16", no:"512", ey:"TOWERS", t:"THE NINTH ROOT", su:"The ninth root of 512", cp:"\u2079\u221a512 = \u221a4 = 2", e:"root{9}{512} = sqrt{4}"},
+
+    {n:"Prime sum",     d:"5/26", no:"017", ey:"PRIME ASSEMBLY", t:"THE TEEN SEVENTEEN", su:"Built from the first four primes", cp:"2 + 3 + 5 + 7", e:"17 = 2 + 3 + 5 + 7"},
+    {n:"257 Pythag",    d:"5/26", no:"257", ey:"THE QUARTET", t:"PYTHAGOREAN 257", su:"A Fermat prime, assembled", cp:"255\u00b2 + 32\u00b2", e:"257 = sqrt{255^2 + 32^2}"}
+  ];
+
+  /* ---- friendly syntax -> LaTeX (auto-braces every superscript) ---- */
+  function toLatex(src){
+    var s=src,i=0;
+    function grpRaw(){ i++; var depth=1,st=i; while(i<s.length&&depth>0){ if(s[i]==='{')depth++; else if(s[i]==='}'){depth--; if(!depth)break;} i++; } var inner=s.slice(st,i); i++; return inner; }
+    function conv(str){ var ss=s,ii=i; s=str;i=0; var r=walk(); s=ss;i=ii; return r; }
+    function operand(){
+      while(s[i]===' ')i++;
+      if(s.startsWith('root{',i)){ i+=4; var n=conv(grpRaw()); var x=conv(grpRaw()); return '\\sqrt['+n+']{'+x+'}'; }
+      if(s.startsWith('sqrt{',i)){ i+=4; return '\\sqrt{'+conv(grpRaw())+'}'; }
+      if(s.startsWith('frac{',i)){ i+=4; var a=conv(grpRaw()); var b=conv(grpRaw()); return '\\frac{'+a+'}{'+b+'}'; }
+      if(s.startsWith('bar{',i)){ i+=3; return '\\overline{'+conv(grpRaw())+'}'; }
+      if(s[i]==='{'){ return conv(grpRaw()); }
+      if(s[i]==='('){ var d=1; i++; var st=i; while(i<s.length&&d>0){ if(s[i]==='(')d++; else if(s[i]===')'){d--; if(!d)break;} i++; } var inner=s.slice(st,i); i++; return '\\left('+conv(inner)+'\\right)'; }
+      if(/[0-9.]/.test(s[i])){ var st=i; while(i<s.length&&/[0-9.]/.test(s[i]))i++; return s.slice(st,i); }
+      var c=s[i++]; if(c==='*'||c==='\u00d7') return '\\times '; return c;
+    }
+    function supChain(){ i++; var e=operand(); while(s[i]===' ')i++; if(s[i]==='^'){ e+='^{'+supChain()+'}'; } return e; }
+    function walk(){ var out='';
+      while(i<s.length){
+        if(s.startsWith('root{',i)){ i+=4; var n=conv(grpRaw()); var x=conv(grpRaw()); out+='\\sqrt['+n+']{'+x+'}'; continue; }
+        if(s.startsWith('sqrt{',i)){ i+=4; out+='\\sqrt{'+conv(grpRaw())+'}'; continue; }
+        if(s.startsWith('frac{',i)){ i+=4; var a=conv(grpRaw()); var b=conv(grpRaw()); out+='\\frac{'+a+'}{'+b+'}'; continue; }
+        if(s.startsWith('bar{',i)){ i+=3; out+='\\overline{'+conv(grpRaw())+'}'; continue; }
+        var c=s[i];
+        if(c==='^'){ out+='^{'+supChain()+'}'; continue; }
+        i++;
+        if(c==='*'||c==='\u00d7') out+='\\times ';
+        else out+=c;
+      } return out;
+    }
+    return walk();
+  }
+
+  /* ---- exact evaluator (verify gate) ---- */
+  function evalExpr(src){
+    var s=src,i=0;
+    function num(){ var st=i; while(i<s.length&&/[0-9.]/.test(s[i]))i++; return parseFloat(s.slice(st,i)); }
+    function grp(){ i++; var depth=1,st=i; while(i<s.length&&depth>0){ if(s[i]==='{')depth++; else if(s[i]==='}'){depth--; if(!depth)break;} i++; } var inner=s.slice(st,i); i++; return evalExpr(inner); }
+    function atom(){ while(s[i]===' ')i++;
+      if(s.startsWith('root{',i)){ i+=4; var n=grp(); var x=grp(); return Math.pow(x,1/n); }
+      if(s.startsWith('sqrt{',i)){ i+=4; return Math.sqrt(grp()); }
+      if(s.startsWith('frac{',i)){ i+=4; var a=grp(); return a/grp(); }
+      if(s.startsWith('bar{',i)){ i+=3; return grp(); }
+      if(s[i]==='{'){ return grp(); }
+      if(s[i]==='('){ i++; var v=expr(); while(s[i]===' ')i++; if(s[i]===')')i++; return v; }
+      return num();
+    }
+    function fact(){ var v=atom(); while(s[i]===' ')i++; while(s[i]==='!'){ i++; var n=Math.round(v),f=1,k; for(k=2;k<=n;k++)f*=k; v=f; while(s[i]===' ')i++; } return v; }
+    function un(){ while(s[i]===' ')i++; if(s[i]==='-'||s[i]==='\u2212'){ i++; return -un(); } return fact(); }
+    function pw(){ var b=un(); while(s[i]===' ')i++; if(s[i]==='^'){ i++; var e=pw(); if(b===1)return 1; if(b===0&&e>0)return 0; return Math.pow(b,e); } return b; }
+    function term(){ var v=pw(); while(s[i]===' ')i++; while(s[i]==='*'||s[i]==='\u00d7'||s[i]==='/'||s[i]==='\u00f7'){ var o=s[i++]; var r=pw(); v=(o==='*'||o==='\u00d7')?v*r:v/r; while(s[i]===' ')i++; } return v; }
+    function expr(){ var v=term(); while(s[i]===' ')i++; while(s[i]==='+'||s[i]==='-'||s[i]==='\u2212'){ var o=s[i++]; var r=term(); v=(o==='+')?v+r:v-r; while(s[i]===' ')i++; } return v; }
+    return expr();
+  }
+  function fmt(x){ var r=Math.round(x); return Math.abs(x-r)<1e-9?String(r):(+x.toFixed(4)); }
+  function verify(eq){
+    if(/bar\{/.test(eq)) return {state:'warn', msg:'Contains a vinculum — check this one by hand.'};
+    var parts=eq.split('=');
+    if(parts.length<2) return {state:'warn', msg:'Add an = sign to check both sides.'};
+    try{ var vals=parts.map(function(p){return evalExpr(p);});
+      var ok=vals.every(function(v){return Math.abs(v-vals[0])<1e-9;});
+      if(ok) return {state:'ok', val:fmt(vals[0]), msg:'Balanced — every side equals '+fmt(vals[0])+'.'};
+      return {state:'bad', msg:'Not balanced — sides read '+vals.map(fmt).join(' vs ')+'.'};
+    }catch(e){ return {state:'warn', msg:'Could not parse — check the syntax.'}; }
+  }
+
+  function fit(el){ var box=el.parentElement,size=42; el.style.fontSize=size+'px';
+    while((el.scrollWidth>box.clientWidth-8 || el.scrollHeight>box.clientHeight-4) && size>14){ size-=1; el.style.fontSize=size+'px'; } }
+
+  function setDate(v){ var d=document.getElementById('datemark'),p=String(v).split('/');
+    d.innerHTML = p.length===2 ? p[0]+'<span class="sl"></span>'+p[1] : v; }
+
+  // build wax seal starburst edge
+  (function(){ var s=''; for(var k=0;k<40;k++){ var a=k*9*Math.PI/180, r=k%2?40:36.5;
+    s+=(k?'L':'M')+(50+r*Math.cos(a)).toFixed(2)+' '+(50+r*Math.sin(a)).toFixed(2)+' '; }
+    document.getElementById('waxStar').innerHTML='<path d="'+s+'Z" fill="#2c5446"/>'; })();
+
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  function update(){
+    setDate(document.getElementById('inDate').value);
+    document.getElementById('sealNo').textContent=document.getElementById('inNo').value;
+    document.getElementById('eyebrow').textContent=document.getElementById('inEye').value;
+    document.getElementById('title').textContent=document.getElementById('inTitle').value;
+    document.getElementById('subtitle').textContent=document.getElementById('inSub').value;
+    document.getElementById('caption').textContent=document.getElementById('inCap').value;
+
+    var eq=document.getElementById('wonder'), raw=document.getElementById('inEq').value;
+    if(typeof katex!=='undefined'){ try{ katex.render(toLatex(raw),eq,{throwOnError:false,displayMode:false}); }catch(e){ eq.textContent=raw; } }
+    else eq.textContent=raw;
+    fit(eq);
+
+    var v=verify(raw), vs=document.getElementById('vstat');
+    vs.className='vstat '+(v.state==='ok'?'ok':v.state==='bad'?'bad':'warn');
+    vs.querySelector('.dot').textContent=(v.state==='ok'?'\u2713':v.state==='bad'?'\u2717':'!');
+    document.getElementById('vmsg').textContent=v.msg;
+
+    var seal=document.getElementById('vseal');
+    if(v.state==='ok'){ seal.classList.add('show'); document.getElementById('vsealVal').textContent='= '+v.val; }
+    else seal.classList.remove('show');
+
+    var cw=document.getElementById('cleanWarn');
+    if(v.state==='bad'){ cw.textContent='\u26A0 '+v.msg+'  Not ready to capture.'; cw.classList.add('show'); }
+    else cw.classList.remove('show');
+  }
+
+  // wire inputs
+  ['inDate','inNo','inEye','inTitle','inSub','inCap','inEq'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',update); });
+
+  // presets
+  var pc=document.getElementById('presets');
+  presets.forEach(function(p){ var b=document.createElement('button'); b.className='chip'; b.textContent=p.n;
+    b.addEventListener('click',function(){
+      document.getElementById('inDate').value=p.d; document.getElementById('inNo').value=p.no;
+      document.getElementById('inEye').value=p.ey; document.getElementById('inTitle').value=p.t;
+      document.getElementById('inSub').value=p.su; document.getElementById('inCap').value=p.cp;
+      document.getElementById('inEq').value=p.e; update(); });
+    pc.appendChild(b); });
+
+  // insert palette (click, don't type)
+  var keys=[['sqrt{}','√','root'],['root{}{}','ⁿ√','index'],['^{}','xⁿ','power'],['^2','x²','square'],
+            ['frac{}{}','a⁄b','frac'],['bar{}','x̄','vinculum'],['*','×','times'],['!','!','factorial'],
+            ['(',' (','open'],[')',') ','close']];
+  var pal=document.getElementById('palette');
+  keys.forEach(function(k){ var b=document.createElement('button'); b.innerHTML=k[1]+'<small>'+k[2]+'</small>';
+    b.addEventListener('click',function(){ var inp=document.getElementById('inEq');
+      var s=inp.selectionStart,e=inp.selectionEnd,t=inp.value,ins=k[0];
+      inp.value=t.slice(0,s)+ins+t.slice(e);
+      var caret=s+ins.length; var firstBrace=ins.indexOf('{');
+      if(firstBrace>=0) caret=s+firstBrace+1;      // drop cursor inside first {}
+      inp.focus(); inp.setSelectionRange(caret,caret); update(); });
+    pal.appendChild(b); });
+
+  document.getElementById('btnClean').addEventListener('click',function(){
+    document.body.classList.toggle('clean');
+    this.textContent=document.body.classList.contains('clean')?'⚙ Show editor panel':'⛶ Hide panel — then capture the plate'; });
+
+  update();
+  window.addEventListener('load',update);
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(update);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Vinculum — Step by Step</title>
+<style>
+  :root{
+    --cream:#FAF6E0; --parch:#F4ECCD; --parch2:#EDE3C2;
+    --teal:#0F6E6B; --amber:#9A6A12; --ink:#241F18; --ink-soft:#5A4F3C;
+    --tan:#D9C9A3; --tan-deep:#B8A271;
+    --series:#1A52B0; --green:#1B8E37; --orange:#C85B17;
+    --seal:#2F5446; --seal-hi:#4C7A66; --seal-lo:#1E3A30;
+    --brandgold:#E7D9A6; --warm:#E0A24A;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; min-height:100%; }
+  body{ background:#140e08; color:var(--ink);
+    font-family:"Hoefler Text","Palatino Linotype",Palatino,Georgia,serif;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:100vh; padding:22px 14px; gap:14px; }
+
+  .stagewrap{ position:relative; width:min(640px,95vw); }
+  .glow{ position:absolute; inset:-12% -8%; z-index:0; border-radius:42%;
+    background:radial-gradient(closest-side, rgba(224,162,74,.30), rgba(200,120,40,.08) 55%, transparent 72%);
+    filter:blur(8px); animation:breathe 6s ease-in-out infinite; }
+  @keyframes breathe{ 0%,100%{opacity:.5; transform:scale(1);} 50%{opacity:.85; transform:scale(1.04);} }
+
+  .plate{ position:relative; z-index:1; overflow:hidden; min-height:430px;
+    background:linear-gradient(168deg, var(--cream), var(--parch) 55%, var(--parch2));
+    border:1px solid #CDBB8C; border-radius:8px; padding:26px 28px 20px; text-align:center;
+    box-shadow:0 18px 50px rgba(0,0,0,.5), inset 0 0 60px rgba(154,106,18,.06);
+    display:flex; flex-direction:column; }
+  .frame{ position:absolute; inset:11px; border:1px solid var(--tan-deep); border-radius:5px; pointer-events:none; opacity:.65; }
+
+  .brand{ font-variant:small-caps; letter-spacing:.08em; color:var(--brandgold); font-weight:700;
+    font-size:clamp(19px,4.4vw,28px); line-height:1.1; }
+  .subtitle{ color:var(--series); font-weight:600; letter-spacing:.14em;
+    font-size:clamp(12px,2.6vw,15px); margin:6px 0 2px; }
+  .eyebrow{ color:var(--amber); font-variant:small-caps; letter-spacing:.16em; font-size:12px; margin:8px 0 2px; }
+
+  .stage{ position:relative; z-index:1; flex:1; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; min-height:210px; gap:12px; padding:6px 0; }
+  .caption{ color:var(--ink-soft); font-style:italic; font-size:clamp(13px,2.9vw,16.5px);
+    line-height:1.5; max-width:34em; margin:2px auto 2px; min-height:3em; }
+
+  /* ---- math display primitives ---- */
+  .big{ display:flex; align-items:flex-start; justify-content:center; gap:6px; }
+  .dig{ position:relative; display:inline-block; font-size:clamp(40px,11vw,74px); line-height:1;
+    color:var(--ink); padding-top:6px; }
+  .dig.g{ color:var(--green); } .dig.o{ color:var(--orange); }
+  .vbar{ position:absolute; left:2%; right:2%; top:2px; height:4px; background:var(--orange);
+    transform:scaleX(0); transform-origin:left; border-radius:2px; }
+  .bd{ border-top:2.6px solid var(--orange); padding-top:1px; }     /* static barred digit */
+
+  .cols{ display:flex; gap:26px; align-items:flex-start; justify-content:center; }
+  .col{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .val{ font-size:clamp(15px,3.4vw,20px); font-weight:700; }
+  .val.g{ color:var(--green); } .val.o{ color:var(--orange); }
+  .result{ font-size:clamp(18px,4.4vw,26px); color:var(--ink-soft); margin-top:6px; }
+  .ans{ color:var(--teal); font-weight:700; font-size:1.25em; }
+
+  .row2{ display:flex; align-items:center; justify-content:center; gap:20px; }
+  .cell{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .lab{ font-size:clamp(13px,2.9vw,16px); font-weight:700; }
+  .lab.g{ color:var(--green); } .lab.o{ color:var(--orange); }
+  .vs{ color:var(--ink-soft); font-style:italic; font-size:16px; }
+
+  .ladder{ display:flex; flex-direction:column; gap:11px; font-size:clamp(17px,4vw,23px); }
+  .lrow b{ color:var(--teal); }
+  .lrow .hint{ color:var(--ink-soft); font-style:italic; font-size:.7em; }
+
+  .borrow{ position:relative; display:flex; align-items:flex-end; justify-content:center; gap:4px; padding-top:34px; }
+  .arrow{ position:absolute; top:-2px; left:50%; transform:translateX(-58%); width:170px; height:54px; overflow:visible; }
+  .arrow path{ fill:none; stroke:var(--amber); stroke-width:2.4; stroke-dasharray:200; stroke-dashoffset:200; }
+  .arrow .head{ fill:var(--amber); opacity:0; }
+  .borrowlab{ position:absolute; top:-4px; left:50%; transform:translateX(-50%);
+    color:var(--amber); font-style:italic; font-size:12.5px; opacity:0; }
+  .swap{ position:relative; display:inline-block; }
+  .swap .to{ position:absolute; left:0; top:0; opacity:0; }
+  .eqs{ font-size:clamp(26px,6vw,42px); color:var(--ink-soft); align-self:center; padding-bottom:8px; }
+
+  .recap{ font-size:clamp(17px,4vw,23px); color:var(--ink); }
+  .recap2{ font-size:clamp(14px,3.2vw,18px); color:var(--ink-soft); font-style:italic; }
+  .down{ color:var(--amber); font-size:26px; }
+
+  .seal{ width:104px; height:104px; margin:6px auto 0; position:relative; display:flex; align-items:center; justify-content:center; }
+  .seal svg{ width:100%; height:100%; filter:drop-shadow(0 4px 6px rgba(0,0,0,.4)); }
+  .seal .uv{ position:absolute; color:#E7EFE6; text-align:center; line-height:1; font-variant:small-caps; }
+  .seal .uv .big2{ font-size:25px; font-weight:700; letter-spacing:.04em; }
+  .seal .uv .sm{ font-size:7.5px; letter-spacing:.12em; margin-top:3px; opacity:.9; }
+
+  /* ---- reveal animations (fire when .stage.play) ---- */
+  .stage .r,.stage .pop,.stage .swap .from,.stage .swap .to,
+  .stage .arrow .head,.stage .borrowlab{ opacity:0; }
+  .stage.play .r{ animation:rise .6s ease-out both var(--d,0s); }
+  .stage.play .pop{ animation:pop .6s cubic-bezier(.2,1.4,.4,1) both var(--d,0s); }
+  .stage.play .vbar{ animation:draw .45s ease-out forwards var(--d,0s); }
+  .stage.play .swap .from{ animation:fout .4s ease both var(--d,0s); }
+  .stage.play .swap .to{ animation:fin .4s ease both var(--d,0s); }
+  .stage.play .arrow path{ animation:dash .55s ease-out forwards var(--d,0s); }
+  .stage.play .arrow .head{ animation:fin .25s ease forwards calc(var(--d,0s) + .45s); }
+  .stage.play .borrowlab{ animation:fin .4s ease both calc(var(--d,0s) + .1s); }
+  @keyframes rise{ from{opacity:0; transform:translateY(11px);} to{opacity:1; transform:none;} }
+  @keyframes pop{ 0%{opacity:0; transform:scale(.6);} 60%{opacity:1; transform:scale(1.08);} 100%{opacity:1; transform:scale(1);} }
+  @keyframes draw{ to{ transform:scaleX(1); } }
+  @keyframes fout{ from{opacity:1;} to{opacity:0;} }
+  @keyframes fin{ from{opacity:0;} to{opacity:1;} }
+  @keyframes dash{ to{ stroke-dashoffset:0; } }
+
+  /* spotlight a digit/symbol for a step */
+  .hl{ border-radius:9px; padding:0 .12em; }
+  .stage.play .hl{ animation:hlin .55s ease both var(--d,0s); }
+  @keyframes hlin{ from{ background:rgba(224,162,74,0); box-shadow:0 0 0 0 rgba(224,162,74,0); }
+    to{ background:rgba(224,162,74,.22); box-shadow:0 0 0 3px rgba(224,162,74,.18); } }
+  .pill{ display:inline-block; border-radius:10px; padding:2px 12px; margin:3px; background:rgba(15,110,107,.07);
+    border:1px solid var(--tan-deep); font-size:clamp(16px,3.6vw,22px); }
+  .pill .k{ color:var(--ink-soft); font-size:.62em; font-style:italic; }
+  .arr{ color:var(--amber); font-size:22px; }
+  .midrow{ display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;
+    font-size:clamp(18px,4.2vw,26px); color:var(--ink); line-height:1.35; }
+  .midrow b{ color:var(--teal); font-weight:700; }
+  .em{ position:relative; display:inline-block; font-size:1.45em; font-weight:700; color:var(--ink); padding-top:4px; }
+
+  .progress{ display:flex; gap:6px; justify-content:center; margin-top:8px; }
+  .pdot{ width:8px; height:8px; border-radius:50%; background:var(--tan-deep); opacity:.5; }
+  .pdot.on{ background:var(--amber); opacity:1; }
+
+  .controls{ position:relative; z-index:1; display:flex; flex-wrap:wrap; gap:9px; align-items:center; justify-content:center; }
+  button{ font-family:inherit; font-size:13px; color:var(--cream); background:#2a2117;
+    border:1px solid #6a5736; border-radius:7px; padding:8px 15px; cursor:pointer; }
+  button:hover{ border-color:var(--warm); } button:disabled{ opacity:.4; cursor:default; }
+  .step{ color:#caa86a; font-size:12.5px; font-family:Georgia,serif; min-width:74px; text-align:center; }
+  label.tog{ color:#caa86a; font-size:12.5px; display:flex; align-items:center; gap:6px; font-family:Georgia,serif; }
+  .hintbar{ color:#8a7350; font-size:11px; font-family:Georgia,serif; text-align:center; max-width:560px; min-height:1.2em; }
+</style>
+</head>
+<body>
+  <div class="stagewrap">
+    <div class="glow"></div>
+    <div class="plate">
+      <div class="frame"></div>
+      <div class="brand">Dr. UV's Mental Math Magic</div>
+      <div class="subtitle">Eighty-Nine Squared — several ways</div>
+      <div class="eyebrow" id="eyebrow"></div>
+      <div class="stage" id="stage"></div>
+      <div class="caption" id="caption"></div>
+      <div class="progress" id="progress"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="prev">‹ Back</button>
+    <span class="step" id="stepn"></span>
+    <button id="next">Next ›</button>
+    <button id="replay">↻ Replay step</button>
+    <label class="tog"><input type="checkbox" id="auto"> auto-play</label>
+    <label class="tog"><input type="checkbox" id="sound" checked> sound</label>
+  </div>
+  <div class="hintbar" id="hint">Tap Next to walk through it · turn on auto-play to let it run · (audio plays in a desktop browser)</div>
+
+<script>
+const $=id=>document.getElementById(id);
+
+/* barred-digit helper: digit with an animated overline */
+const B=(d,delay,cls='')=>`<span class="dig ${cls}">${d}<i class="vbar" style="--d:${delay}"></i></span>`;
+const D=(d,cls='')=>`<span class="dig ${cls}">${d}</span>`;
+
+const sealSVG=()=>{
+  let d=""; const N=44, cx=50, cy=50, rO=48, rI=40;
+  for(let i=0;i<=N;i++){ const a=(i/N)*Math.PI*2-Math.PI/2; const r=i%2?rI:rO;
+    d+=(i?"L":"M")+(cx+r*Math.cos(a)).toFixed(1)+" "+(cy+r*Math.sin(a)).toFixed(1); }
+  return `<svg viewBox="0 0 100 100"><defs><radialGradient id="sg" cx="38%" cy="34%" r="72%">
+    <stop offset="0%" stop-color="var(--seal-hi)"/><stop offset="62%" stop-color="var(--seal)"/>
+    <stop offset="100%" stop-color="var(--seal-lo)"/></radialGradient></defs>
+    <path d="${d}Z" fill="url(#sg)"/></svg>
+    <div class="uv"><div class="big2">UV</div><div class="sm">verified · exact</div></div>`;
+};
+
+/* borrow scene builder: 'a b̄' converts to normal */
+function borrowScene(a,u,res){
+  const arrow=`<svg class="arrow" viewBox="0 0 170 54">
+    <path d="M118 30 C 104 2, 66 2, 52 26"/>
+    <path class="head" d="M52 26 l 9 -2 l -3 9 z"/></svg>
+    <div class="borrowlab">borrow 1</div>`;
+  return `<div class="borrow">${arrow}
+      <span class="dig"><span class="swap"><span class="from" style="--d:1.05s">${a}</span><span class="to" style="--d:1.05s">${a-1}</span></span></span>
+      <span class="dig"><span class="swap"><span class="from" style="--d:1.35s">${u}<i class="vbar" style="--d:.45s"></i></span><span class="to" style="--d:1.35s">${10-u}</span></span></span>
+      <span class="eqs r" style="--d:1.85s">=</span>
+      <span class="dig ans-d pop" style="--d:2.05s; color:var(--teal)">${res}</span>
+    </div>`;
+}
+
+const SCENES=[
+  { eye:"The question",
+    html:`<div class="midrow" style="font-size:clamp(30px,7vw,50px)">
+        <span class="r" style="--d:.2s; color:var(--teal); font-weight:700">89 &times; 89</span>
+        <span class="r" style="--d:.7s">=</span>
+        <span class="pop" style="--d:1.0s; color:var(--orange); font-weight:700">?</span>
+      </div>`,
+    cap:"One square, several roads. Watch four ways reach the very same answer.",
+    dur:5200 },
+
+  { eye:"The long way",
+    html:`<div class="midrow" style="flex-direction:column; gap:9px">
+        <span class="r" style="--d:.2s">89 &times; 9 = 801</span>
+        <span class="r" style="--d:.7s">89 &times; 80 = 7120</span>
+        <span class="r" style="--d:1.3s">801 + 7120 = <b>7921</b></span>
+      </div>`,
+    cap:"The long way works &mdash; partial products, then add. Correct, but a grind. There are quicker roads.",
+    dur:5800 },
+
+  { eye:"Vedic duplex",
+    html:`<div class="midrow"><span class="r" style="--d:.2s">split&nbsp;</span>
+        <span class="em hl r" style="--d:.5s">8</span><span class="r" style="--d:.5s">&nbsp;|&nbsp;</span><span class="em hl r" style="--d:.7s">9</span></div>
+      <div class="midrow" style="margin-top:12px">
+        <span class="pill r" style="--d:1.1s">8&sup2; = <b>64</b></span>
+        <span class="pill r" style="--d:1.5s">2&middot;8&middot;9 = <b>144</b></span>
+        <span class="pill r" style="--d:1.9s">9&sup2; = <b>81</b></span>
+      </div>
+      <div class="midrow" style="margin-top:12px"><span class="r" style="--d:2.5s">64 | 144 | 81 &rarr; <b>7921</b></span></div>`,
+    cap:"Vedic duplex: square the ends, double the middle. 64, 144, 81 fold together into 7921.",
+    dur:6400 },
+
+  { eye:"The vinculum way",
+    html:`<div class="midrow" style="font-size:clamp(20px,4.6vw,28px)"><span class="r" style="--d:.2s">89 = </span>
+        <span class="em r" style="--d:.5s">9</span>
+        <span class="em r" style="--d:.7s">1<i class="vbar" style="--d:1.0s"></i></span>
+        <span class="r" style="--d:1.3s; color:var(--ink-soft); font-style:italic; font-size:.7em">(90 &minus; 1)</span></div>
+      <div class="midrow" style="margin-top:12px">
+        <span class="pill r" style="--d:1.6s">9&sup2; = <b>81</b></span>
+        <span class="pill hl r" style="--d:2.0s">2&middot;9&middot;(&minus;1) = <b style="color:var(--orange)">&minus;18</b></span>
+        <span class="pill r" style="--d:2.4s">(&minus;1)&sup2; = <b>1</b></span>
+      </div>
+      <div class="midrow" style="margin-top:12px"><span class="r" style="--d:2.9s">81 | <span style="color:var(--orange)">&minus;18</span> | 1 &rarr; <b>7921</b></span></div>`,
+    cap:"Near ninety, write 89 as 9 1&#773;. Now the middle term is just &minus;18, not 144 &mdash; almost nothing to carry. &rarr; 7921.",
+    dur:7000 },
+
+  { eye:"Base one hundred",
+    html:`<div class="midrow" style="font-size:clamp(20px,4.6vw,28px)"><span class="r" style="--d:.2s">89 = 100 &minus; </span>
+        <span class="em hl r" style="--d:.6s">11</span></div>
+      <div class="midrow" style="margin-top:12px">
+        <span class="pill r" style="--d:1.1s">89 &minus; 11 = <b>78</b></span>
+        <span class="pill r" style="--d:1.5s">11&sup2; = <b>121</b></span>
+      </div>
+      <div class="midrow" style="margin-top:12px"><span class="r" style="--d:2.1s">78 | 121 &nbsp;&rarr;&nbsp; carry 1 &nbsp;&rarr;&nbsp; <b>7921</b></span></div>`,
+    cap:"Hugging 100: drop the deficiency (11) &rarr; 78, append 11&sup2; = 121, let the 121 carry its 1 &rarr; 7921.",
+    dur:6400 },
+
+  { eye:"Four roads, one answer",
+    html:`<div class="recap r" style="--d:.2s">Four roads. One answer: <b style="color:var(--teal)">7921</b>.</div>
+      <div class="recap2 r" style="--d:.9s">Read where the number lives &mdash; reach for the nearest base.</div>
+      <div class="seal pop" style="--d:1.5s">${sealSVG()}</div>`,
+    cap:"",
+    dur:6200 },
+];
+
+let idx=0, autoTimer=null;
+
+function renderProgress(){ const p=$('progress'); p.innerHTML='';
+  SCENES.forEach((_,i)=>{ const d=document.createElement('div'); d.className='pdot'+(i===idx?' on':''); p.appendChild(d); }); }
+
+function show(i){
+  idx=(i+SCENES.length)%SCENES.length;
+  const s=SCENES[idx];
+  $('eyebrow').textContent=s.eye;
+  $('caption').innerHTML=s.cap;
+  const st=$('stage');
+  st.classList.remove('play'); st.innerHTML=s.html; void st.offsetWidth;
+  st.classList.add('play');
+  $('stepn').textContent=`Step ${idx+1} / ${SCENES.length}`;
+  $('prev').disabled = (idx===0);
+  $('next').disabled = (idx===SCENES.length-1) && !$('auto').checked;
+  renderProgress();
+  cue(idx);
+  clearTimeout(autoTimer);
+  if($('auto').checked) autoTimer=setTimeout(()=>{ show(idx+1<SCENES.length ? idx+1 : 0); }, s.dur);
+}
+
+/* ---------- gentle audio (synth; plays in a desktop browser) ---------- */
+let actx=null, mg=null;
+function audioOn(){ try{ if(!actx){ const AC=window.AudioContext||window.webkitAudioContext; if(!AC)return;
+  actx=new AC(); mg=actx.createGain(); mg.gain.value=0.8; mg.connect(actx.destination);} if(actx.state!=='running')actx.resume(); }catch(e){} }
+function tone(f,when,dur,peak,type='sine'){ if(!actx)return; const t=actx.currentTime+when;
+  const o=actx.createOscillator(); o.type=type; o.frequency.value=f;
+  const lp=actx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=2400;
+  const g=actx.createGain(); o.connect(lp); lp.connect(g); g.connect(mg);
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(peak,t+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.start(t); o.stop(t+dur+0.05); }
+const SCALE=[392.00,440.00,493.88,523.25,587.33,659.25,698.46,783.99]; /* G-major-ish climb */
+function cue(i){
+  if(!$('sound').checked || !actx || actx.state!=='running') return;
+  if(i===SCENES.length-1){ [392,523.25,659.25].forEach((f,k)=>tone(f,0.05+k*0.02,1.8,0.12)); tone(783.99,0.3,1.6,0.08); }
+  else tone(SCALE[i%SCALE.length], 0.04, 1.0, 0.13);
+}
+
+function step(n){ audioOn(); show(idx+n); }
+$('next').addEventListener('click', ()=>step(1));
+$('prev').addEventListener('click', ()=>step(-1));
+$('replay').addEventListener('click', ()=>{ audioOn(); show(idx); });
+$('auto').addEventListener('change', e=>{ audioOn(); if(e.target.checked) show(idx); else { clearTimeout(autoTimer); $('next').disabled=(idx===SCENES.length-1); } });
+$('sound').addEventListener('change', e=>{ if(e.target.checked) audioOn(); });
+
+show(0);
+</script>
+</body>
+</html>

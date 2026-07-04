@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Vinculum — Step by Step</title>
+<style>
+  :root{
+    --cream:#FAF6E0; --parch:#F4ECCD; --parch2:#EDE3C2;
+    --teal:#0F6E6B; --amber:#9A6A12; --ink:#241F18; --ink-soft:#5A4F3C;
+    --tan:#D9C9A3; --tan-deep:#B8A271;
+    --series:#1A52B0; --green:#1B8E37; --orange:#C85B17;
+    --seal:#2F5446; --seal-hi:#4C7A66; --seal-lo:#1E3A30;
+    --brandgold:#E7D9A6; --warm:#E0A24A;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; min-height:100%; }
+  body{ background:#140e08; color:var(--ink);
+    font-family:"Hoefler Text","Palatino Linotype",Palatino,Georgia,serif;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:100vh; padding:22px 14px; gap:14px; }
+
+  .stagewrap{ position:relative; width:min(640px,95vw); }
+  .glow{ position:absolute; inset:-12% -8%; z-index:0; border-radius:42%;
+    background:radial-gradient(closest-side, rgba(224,162,74,.30), rgba(200,120,40,.08) 55%, transparent 72%);
+    filter:blur(8px); animation:breathe 6s ease-in-out infinite; }
+  @keyframes breathe{ 0%,100%{opacity:.5; transform:scale(1);} 50%{opacity:.85; transform:scale(1.04);} }
+
+  .plate{ position:relative; z-index:1; overflow:hidden; min-height:430px;
+    background:linear-gradient(168deg, var(--cream), var(--parch) 55%, var(--parch2));
+    border:1px solid #CDBB8C; border-radius:8px; padding:26px 28px 20px; text-align:center;
+    box-shadow:0 18px 50px rgba(0,0,0,.5), inset 0 0 60px rgba(154,106,18,.06);
+    display:flex; flex-direction:column; }
+  .frame{ position:absolute; inset:11px; border:1px solid var(--tan-deep); border-radius:5px; pointer-events:none; opacity:.65; }
+
+  .brand{ font-variant:small-caps; letter-spacing:.08em; color:var(--brandgold);
+    font-size:clamp(19px,4.4vw,28px); line-height:1.1; }
+  .subtitle{ color:var(--series); font-weight:600; letter-spacing:.14em;
+    font-size:clamp(12px,2.6vw,15px); margin:6px 0 2px; }
+  .eyebrow{ color:var(--amber); font-variant:small-caps; letter-spacing:.16em; font-size:12px; margin:8px 0 2px; }
+
+  .stage{ position:relative; z-index:1; flex:1; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; min-height:210px; gap:12px; padding:6px 0; }
+  .caption{ color:var(--ink-soft); font-style:italic; font-size:clamp(13px,2.9vw,16.5px);
+    line-height:1.5; max-width:34em; margin:2px auto 2px; min-height:3em; }
+
+  /* ---- math display primitives ---- */
+  .big{ display:flex; align-items:flex-start; justify-content:center; gap:6px; }
+  .dig{ position:relative; display:inline-block; font-size:clamp(40px,11vw,74px); line-height:1;
+    color:var(--ink); padding-top:6px; }
+  .dig.g{ color:var(--green); } .dig.o{ color:var(--orange); }
+  .vbar{ position:absolute; left:2%; right:2%; top:2px; height:4px; background:var(--orange);
+    transform:scaleX(0); transform-origin:left; border-radius:2px; }
+  .bd{ border-top:2.6px solid var(--orange); padding-top:1px; }     /* static barred digit */
+
+  .cols{ display:flex; gap:26px; align-items:flex-start; justify-content:center; }
+  .col{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .val{ font-size:clamp(15px,3.4vw,20px); font-weight:700; }
+  .val.g{ color:var(--green); } .val.o{ color:var(--orange); }
+  .result{ font-size:clamp(18px,4.4vw,26px); color:var(--ink-soft); margin-top:6px; }
+  .ans{ color:var(--teal); font-weight:700; font-size:1.25em; }
+
+  .row2{ display:flex; align-items:center; justify-content:center; gap:20px; }
+  .cell{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .lab{ font-size:clamp(13px,2.9vw,16px); font-weight:700; }
+  .lab.g{ color:var(--green); } .lab.o{ color:var(--orange); }
+  .vs{ color:var(--ink-soft); font-style:italic; font-size:16px; }
+
+  .ladder{ display:flex; flex-direction:column; gap:11px; font-size:clamp(17px,4vw,23px); }
+  .lrow b{ color:var(--teal); }
+  .lrow .hint{ color:var(--ink-soft); font-style:italic; font-size:.7em; }
+
+  .borrow{ position:relative; display:flex; align-items:flex-end; justify-content:center; gap:4px; padding-top:34px; }
+  .arrow{ position:absolute; top:-2px; left:50%; transform:translateX(-58%); width:170px; height:54px; overflow:visible; }
+  .arrow path{ fill:none; stroke:var(--amber); stroke-width:2.4; stroke-dasharray:200; stroke-dashoffset:200; }
+  .arrow .head{ fill:var(--amber); opacity:0; }
+  .borrowlab{ position:absolute; top:-4px; left:50%; transform:translateX(-50%);
+    color:var(--amber); font-style:italic; font-size:12.5px; opacity:0; }
+  .swap{ position:relative; display:inline-block; }
+  .swap .to{ position:absolute; left:0; top:0; opacity:0; }
+  .eqs{ font-size:clamp(26px,6vw,42px); color:var(--ink-soft); align-self:center; padding-bottom:8px; }
+
+  .recap{ font-size:clamp(17px,4vw,23px); color:var(--ink); }
+  .recap2{ font-size:clamp(14px,3.2vw,18px); color:var(--ink-soft); font-style:italic; }
+  .down{ color:var(--amber); font-size:26px; }
+
+  .seal{ width:104px; height:104px; margin:6px auto 0; position:relative; display:flex; align-items:center; justify-content:center; }
+  .seal svg{ width:100%; height:100%; filter:drop-shadow(0 4px 6px rgba(0,0,0,.4)); }
+  .seal .uv{ position:absolute; color:#E7EFE6; text-align:center; line-height:1; font-variant:small-caps; }
+  .seal .uv .big2{ font-size:25px; font-weight:700; letter-spacing:.04em; }
+  .seal .uv .sm{ font-size:7.5px; letter-spacing:.12em; margin-top:3px; opacity:.9; }
+
+  /* ---- reveal animations (fire when .stage.play) ---- */
+  .stage .r,.stage .pop,.stage .swap .from,.stage .swap .to,
+  .stage .arrow .head,.stage .borrowlab{ opacity:0; }
+  .stage.play .r{ animation:rise .6s ease-out both var(--d,0s); }
+  .stage.play .pop{ animation:pop .6s cubic-bezier(.2,1.4,.4,1) both var(--d,0s); }
+  .stage.play .vbar{ animation:draw .45s ease-out forwards var(--d,0s); }
+  .stage.play .swap .from{ animation:fout .4s ease both var(--d,0s); }
+  .stage.play .swap .to{ animation:fin .4s ease both var(--d,0s); }
+  .stage.play .arrow path{ animation:dash .55s ease-out forwards var(--d,0s); }
+  .stage.play .arrow .head{ animation:fin .25s ease forwards calc(var(--d,0s) + .45s); }
+  .stage.play .borrowlab{ animation:fin .4s ease both calc(var(--d,0s) + .1s); }
+  @keyframes rise{ from{opacity:0; transform:translateY(11px);} to{opacity:1; transform:none;} }
+  @keyframes pop{ 0%{opacity:0; transform:scale(.6);} 60%{opacity:1; transform:scale(1.08);} 100%{opacity:1; transform:scale(1);} }
+  @keyframes draw{ to{ transform:scaleX(1); } }
+  @keyframes fout{ from{opacity:1;} to{opacity:0;} }
+  @keyframes fin{ from{opacity:0;} to{opacity:1;} }
+  @keyframes dash{ to{ stroke-dashoffset:0; } }
+
+  .progress{ display:flex; gap:6px; justify-content:center; margin-top:8px; }
+  .pdot{ width:8px; height:8px; border-radius:50%; background:var(--tan-deep); opacity:.5; }
+  .pdot.on{ background:var(--amber); opacity:1; }
+
+  .controls{ position:relative; z-index:1; display:flex; flex-wrap:wrap; gap:9px; align-items:center; justify-content:center; }
+  button{ font-family:inherit; font-size:13px; color:var(--cream); background:#2a2117;
+    border:1px solid #6a5736; border-radius:7px; padding:8px 15px; cursor:pointer; }
+  button:hover{ border-color:var(--warm); } button:disabled{ opacity:.4; cursor:default; }
+  .step{ color:#caa86a; font-size:12.5px; font-family:Georgia,serif; min-width:74px; text-align:center; }
+  label.tog{ color:#caa86a; font-size:12.5px; display:flex; align-items:center; gap:6px; font-family:Georgia,serif; }
+  .hintbar{ color:#8a7350; font-size:11px; font-family:Georgia,serif; text-align:center; max-width:560px; min-height:1.2em; }
+</style>
+</head>
+<body>
+  <div class="stagewrap">
+    <div class="glow"></div>
+    <div class="plate">
+      <div class="frame"></div>
+      <div class="brand">Dr. UV's Mental Math Magic</div>
+      <div class="subtitle">The Vinculum — step by step</div>
+      <div class="eyebrow" id="eyebrow"></div>
+      <div class="stage" id="stage"></div>
+      <div class="caption" id="caption"></div>
+      <div class="progress" id="progress"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="prev">‹ Back</button>
+    <span class="step" id="stepn"></span>
+    <button id="next">Next ›</button>
+    <button id="replay">↻ Replay step</button>
+    <label class="tog"><input type="checkbox" id="auto"> auto-play</label>
+    <label class="tog"><input type="checkbox" id="sound" checked> sound</label>
+  </div>
+  <div class="hintbar" id="hint">Tap Next to walk through it · turn on auto-play to let it run · (audio plays in a desktop browser)</div>
+
+<script>
+const $=id=>document.getElementById(id);
+
+/* barred-digit helper: digit with an animated overline */
+const B=(d,delay,cls='')=>`<span class="dig ${cls}">${d}<i class="vbar" style="--d:${delay}"></i></span>`;
+const D=(d,cls='')=>`<span class="dig ${cls}">${d}</span>`;
+
+const sealSVG=()=>{
+  let d=""; const N=44, cx=50, cy=50, rO=48, rI=40;
+  for(let i=0;i<=N;i++){ const a=(i/N)*Math.PI*2-Math.PI/2; const r=i%2?rI:rO;
+    d+=(i?"L":"M")+(cx+r*Math.cos(a)).toFixed(1)+" "+(cy+r*Math.sin(a)).toFixed(1); }
+  return `<svg viewBox="0 0 100 100"><defs><radialGradient id="sg" cx="38%" cy="34%" r="72%">
+    <stop offset="0%" stop-color="var(--seal-hi)"/><stop offset="62%" stop-color="var(--seal)"/>
+    <stop offset="100%" stop-color="var(--seal-lo)"/></radialGradient></defs>
+    <path d="${d}Z" fill="url(#sg)"/></svg>
+    <div class="uv"><div class="big2">UV</div><div class="sm">verified · exact</div></div>`;
+};
+
+/* borrow scene builder: 'a b̄' converts to normal */
+function borrowScene(a,u,res){
+  const arrow=`<svg class="arrow" viewBox="0 0 170 54">
+    <path d="M118 30 C 104 2, 66 2, 52 26"/>
+    <path class="head" d="M52 26 l 9 -2 l -3 9 z"/></svg>
+    <div class="borrowlab">borrow 1</div>`;
+  return `<div class="borrow">${arrow}
+      <span class="dig"><span class="swap"><span class="from" style="--d:1.05s">${a}</span><span class="to" style="--d:1.05s">${a-1}</span></span></span>
+      <span class="dig"><span class="swap"><span class="from" style="--d:1.35s">${u}<i class="vbar" style="--d:.45s"></i></span><span class="to" style="--d:1.35s">${10-u}</span></span></span>
+      <span class="eqs r" style="--d:1.85s">=</span>
+      <span class="dig ans-d pop" style="--d:2.05s; color:var(--teal)">${res}</span>
+    </div>`;
+}
+
+const SCENES=[
+  { eye:"What it is",
+    html:`<div class="big">${B(2,'.7s','o')}</div>
+          <div class="pop" style="--d:1.25s; font-size:clamp(22px,5vw,30px); color:var(--orange)">means &minus;2</div>`,
+    cap:"Meet the vinculum — a small bar over a digit. That one stroke makes the digit count <b>backwards</b>.",
+    dur:5200 },
+
+  { eye:"The rule",
+    html:`<div class="row2">
+        <div class="cell"><span class="dig r" style="--d:.2s">2</span><div class="lab g r" style="--d:.6s">worth&nbsp;+2</div></div>
+        <div class="vs r" style="--d:.9s">vs</div>
+        <div class="cell">${B(2,'1.35s','o').replace('class="dig o"','class="dig o r" style="--d:1.1s"')}<div class="lab o pop" style="--d:1.7s">worth&nbsp;&minus;2</div></div>
+      </div>`,
+    cap:"Same digit, two meanings. The bar simply <b>flips the sign</b> of what that place is worth.",
+    dur:5200 },
+
+  { eye:"Read one",
+    html:`<div class="cols">
+        <div class="col">${D(1,'r').replace('class="dig "','class="dig r" style="--d:.2s"')}<span class="val g r" style="--d:1.0s">+10</span></div>
+        <div class="col">${B(2,'.9s','o').replace('class="dig o"','class="dig o r" style="--d:.5s"')}<span class="val o r" style="--d:1.3s">&minus;2</span></div>
+      </div>
+      <div class="result"><span class="r" style="--d:1.85s">10 &minus; 2 = </span><span class="ans pop" style="--d:2.15s">8</span></div>`,
+    cap:"Read it place by place: ten, minus two. So <b>1 2&#773;</b> is just <b>8</b>.",
+    dur:5600 },
+
+  { eye:"The intuition",
+    html:`<div class="ladder">
+        <div class="lrow r" style="--d:.3s"><b>8</b> = 1&nbsp;<span class="bd">2</span> &nbsp;<span class="hint">(10 &minus; 2)</span></div>
+        <div class="lrow r" style="--d:.8s"><b>7</b> = 1&nbsp;<span class="bd">3</span> &nbsp;<span class="hint">(10 &minus; 3)</span></div>
+        <div class="lrow r" style="--d:1.3s"><b>19</b> = 2&nbsp;<span class="bd">1</span> &nbsp;<span class="hint">(20 &minus; 1)</span></div>
+      </div>`,
+    cap:"Any number just shy of a round ten is a bar in disguise — &ldquo;the next ten, minus a little.&rdquo;",
+    dur:5800 },
+
+  { eye:"Reading it back",
+    html: borrowScene(3,5,25),
+    cap:"To read it the normal way: <b>borrow one</b> from the left digit, and the barred digit becomes <b>ten minus itself</b>. 3 5&#773; &rarr; 25.",
+    dur:6200 },
+
+  { eye:"Same move again",
+    html: borrowScene(9,8,82),
+    cap:"Once more — 9 8&#773;: the nine drops to eight, and ten minus eight is two &rarr; <b>82</b>. The move never changes.",
+    dur:6000 },
+
+  { eye:"Why it matters",
+    html:`<div class="big r" style="--d:.2s">${D(8)}${D(9)}</div>
+      <div class="down r" style="--d:.9s">&#8595;</div>
+      <div class="big">${D(9,'').replace('class="dig "','class="dig r" style="--d:1.2s"')}${B(1,'1.9s','o').replace('class="dig o"','class="dig o r" style="--d:1.5s"')}
+        <span class="hint r" style="--d:2.3s; font-size:clamp(13px,3vw,17px); color:var(--ink-soft); font-style:italic; align-self:center; padding-bottom:10px">(90 &minus; 1)</span></div>`,
+    cap:"Now the magic: <b>89 is 9 1&#773;</b> — one short of ninety. Numbers that hug a round base become effortless to square and multiply.",
+    dur:6400 },
+
+  { eye:"In one line",
+    html:`<div class="recap r" style="--d:.2s">A bar is a digit that counts backwards.</div>
+      <div class="recap2 r" style="--d:.9s">One stroke turns a hard number into an easy one.</div>
+      <div class="seal pop" style="--d:1.5s">${sealSVG()}</div>`,
+    cap:"",
+    dur:6000 },
+];
+
+let idx=0, autoTimer=null;
+
+function renderProgress(){ const p=$('progress'); p.innerHTML='';
+  SCENES.forEach((_,i)=>{ const d=document.createElement('div'); d.className='pdot'+(i===idx?' on':''); p.appendChild(d); }); }
+
+function show(i){
+  idx=(i+SCENES.length)%SCENES.length;
+  const s=SCENES[idx];
+  $('eyebrow').textContent=s.eye;
+  $('caption').innerHTML=s.cap;
+  const st=$('stage');
+  st.classList.remove('play'); st.innerHTML=s.html; void st.offsetWidth;
+  st.classList.add('play');
+  $('stepn').textContent=`Step ${idx+1} / ${SCENES.length}`;
+  $('prev').disabled = (idx===0);
+  $('next').disabled = (idx===SCENES.length-1) && !$('auto').checked;
+  renderProgress();
+  cue(idx);
+  clearTimeout(autoTimer);
+  if($('auto').checked) autoTimer=setTimeout(()=>{ show(idx+1<SCENES.length ? idx+1 : 0); }, s.dur);
+}
+
+/* ---------- gentle audio (synth; plays in a desktop browser) ---------- */
+let actx=null, mg=null;
+function audioOn(){ try{ if(!actx){ const AC=window.AudioContext||window.webkitAudioContext; if(!AC)return;
+  actx=new AC(); mg=actx.createGain(); mg.gain.value=0.8; mg.connect(actx.destination);} if(actx.state!=='running')actx.resume(); }catch(e){} }
+function tone(f,when,dur,peak,type='sine'){ if(!actx)return; const t=actx.currentTime+when;
+  const o=actx.createOscillator(); o.type=type; o.frequency.value=f;
+  const lp=actx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=2400;
+  const g=actx.createGain(); o.connect(lp); lp.connect(g); g.connect(mg);
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(peak,t+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.start(t); o.stop(t+dur+0.05); }
+const SCALE=[392.00,440.00,493.88,523.25,587.33,659.25,698.46,783.99]; /* G-major-ish climb */
+function cue(i){
+  if(!$('sound').checked || !actx || actx.state!=='running') return;
+  if(i===SCENES.length-1){ [392,523.25,659.25].forEach((f,k)=>tone(f,0.05+k*0.02,1.8,0.12)); tone(783.99,0.3,1.6,0.08); }
+  else tone(SCALE[i%SCALE.length], 0.04, 1.0, 0.13);
+}
+
+function step(n){ audioOn(); show(idx+n); }
+$('next').addEventListener('click', ()=>step(1));
+$('prev').addEventListener('click', ()=>step(-1));
+$('replay').addEventListener('click', ()=>{ audioOn(); show(idx); });
+$('auto').addEventListener('change', e=>{ audioOn(); if(e.target.checked) show(idx); else { clearTimeout(autoTimer); $('next').disabled=(idx===SCENES.length-1); } });
+$('sound').addEventListener('change', e=>{ if(e.target.checked) audioOn(); });
+
+show(0);
+</script>
+</body>
+</html>

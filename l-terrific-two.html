@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dr. UV's Motion Plate</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<style>
+  :root{
+    --cream:#FAF6E0; --parch:#F4ECCD; --parch2:#EDE3C2;
+    --teal:#0F6E6B; --amber:#9A6A12; --ink:#241F18; --ink-soft:#5A4F3C;
+    --tan:#D9C9A3; --tan-deep:#B8A271;
+    --series:#1A52B0; --expr:#1B8E37; --orange:#C85B17;
+    --seal:#2F5446; --seal-hi:#4C7A66; --seal-lo:#1E3A30;
+    --brandgold:#E7D9A6; --warm:#E0A24A;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; height:100%; }
+  body{ background:#140e08; color:var(--ink);
+    font-family:"Hoefler Text","Palatino Linotype",Palatino,Georgia,serif;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:100vh; padding:24px 16px; gap:16px; }
+
+  /* warm stage behind the plate */
+  .stage{ position:relative; width:min(620px,94vw); }
+  .glow{ position:absolute; inset:-12% -8% -10%; z-index:0; border-radius:40%;
+    background:radial-gradient(closest-side, rgba(224,162,74,.34), rgba(200,120,40,.10) 55%, transparent 72%);
+    filter:blur(8px); animation:breathe 5.5s ease-in-out infinite; }
+  @keyframes breathe{ 0%,100%{ opacity:.55; transform:scale(1); } 50%{ opacity:.92; transform:scale(1.04); } }
+
+  /* the plate */
+  .plate{ position:relative; z-index:1; overflow:hidden;
+    background:linear-gradient(168deg, var(--cream), var(--parch) 55%, var(--parch2));
+    border:1px solid #CDBB8C; border-radius:8px;
+    padding:30px 30px 22px; text-align:center;
+    box-shadow:0 18px 50px rgba(0,0,0,.5), inset 0 0 60px rgba(154,106,18,.06); }
+  .frame{ position:absolute; inset:12px; border:1px solid var(--tan-deep); border-radius:5px; pointer-events:none; opacity:.7; }
+  /* warm flash overlay on seal impact */
+  .plate::after{ content:""; position:absolute; inset:0; border-radius:8px; pointer-events:none;
+    background:radial-gradient(closest-side, rgba(224,162,74,.5), transparent 70%); opacity:0; }
+  .plate.play::after{ animation:flash 1.1s ease-out both 4.0s; }
+  @keyframes flash{ 0%{opacity:0;} 22%{opacity:.5;} 100%{opacity:0;} }
+
+  .masthead .brand{ font-variant:small-caps; letter-spacing:.08em; line-height:1.12;
+    font-size:clamp(20px,4.6vw,30px); color:var(--brandgold);
+    text-shadow:0 1px 0 rgba(120,80,20,.25); }
+  .digits{ color:var(--series); font-weight:600; letter-spacing:.18em;
+    font-size:clamp(12px,2.6vw,15.5px); margin:7px 0 2px; }
+  .parade{ color:var(--expr); font-weight:600; font-variant:small-caps; letter-spacing:.14em;
+    font-size:clamp(12px,2.6vw,16px); margin:1px 0 3px; }
+  .title{ color:var(--orange); font-size:clamp(30px,7.2vw,50px); line-height:1.05; margin:6px 0 2px;
+    text-shadow:0 1px 8px rgba(200,91,23,.18); }
+  .note{ color:var(--ink-soft); font-style:italic; font-size:clamp(12px,2.6vw,15px); margin:2px 0 4px; }
+
+  .equation{ margin:18px 0 8px; color:var(--expr); font-size:clamp(17px,4.4vw,27px); }
+  .equation .katex{ color:var(--expr); }
+
+  .divider{ height:1px; background:linear-gradient(90deg,transparent,var(--tan-deep),transparent); margin:12px 22px 8px; }
+  .ledger{ display:flex; flex-direction:column; gap:3px; max-width:380px; margin:0 auto;
+    font-variant:small-caps; letter-spacing:.04em; font-size:13px; color:var(--ink-soft); }
+  .lrow{ display:flex; justify-content:space-between; }
+  .lrow b{ color:var(--ink); font-variant:normal; font-weight:700; }
+  .verdict{ color:var(--seal); font-variant:small-caps; letter-spacing:.08em; font-size:12.5px; margin:9px 0 2px; }
+  .colophon{ color:var(--amber); font-variant:small-caps; letter-spacing:.06em; font-size:10.5px; margin-top:4px; }
+
+  /* wax seal */
+  .seal{ position:absolute; right:26px; bottom:24px; width:96px; height:96px; z-index:3;
+    display:flex; align-items:center; justify-content:center; }
+  .seal svg{ width:100%; height:100%; filter:drop-shadow(0 4px 6px rgba(0,0,0,.4)); }
+  .seal .uv{ position:absolute; color:#E7EFE6; text-align:center; line-height:1;
+    font-variant:small-caps; }
+  .seal .uv .big{ font-size:25px; font-weight:700; letter-spacing:.04em; }
+  .seal .uv .sm{ font-size:7.5px; letter-spacing:.12em; margin-top:3px; opacity:.9; }
+  .seal-ring{ position:absolute; right:26px; bottom:24px; width:96px; height:96px; z-index:2;
+    border-radius:50%; border:2px solid var(--warm); opacity:0; }
+
+  /* ---- animation states (added when .play present) ---- */
+  .plate .masthead,.plate .digits,.plate .parade,.plate .title,
+  .plate .note,.plate .equation,.plate .divider,.plate .ledger,
+  .plate .verdict,.plate .colophon,.plate .seal{ opacity:0; }
+  .plate.play .masthead{ animation:rise .7s ease-out both .15s; }
+  .plate.play .digits{ animation:rise .7s ease-out both .55s; }
+  .plate.play .parade{ animation:rise .7s ease-out both .85s; }
+  .plate.play .title{ animation:riseWarm .9s cubic-bezier(.2,1,.3,1) both 1.15s; }
+  .plate.play .note{ animation:rise .7s ease-out both 1.7s; }
+  .plate.play .equation{ animation:ink 1.5s ease-out both 2.05s; }
+  .plate.play .divider{ animation:rise .6s ease-out both 3.4s; }
+  .plate.play .ledger{ animation:rise .7s ease-out both 3.55s; }
+  .plate.play .verdict{ animation:rise .7s ease-out both 4.1s; }
+  .plate.play .colophon{ animation:rise .7s ease-out both 4.3s; }
+  .plate.play .seal{ animation:stamp .75s cubic-bezier(.18,1.5,.4,1) both 3.95s; }
+  .plate.play .seal-ring{ animation:ring .9s ease-out both 4.0s; }
+
+  @keyframes rise{ from{opacity:0; transform:translateY(11px);} to{opacity:1; transform:none;} }
+  @keyframes riseWarm{ 0%{opacity:0; transform:translateY(14px) scale(.97); text-shadow:0 0 0 rgba(200,91,23,0);}
+    60%{opacity:1; text-shadow:0 2px 16px rgba(200,91,23,.4);}
+    100%{opacity:1; transform:none; text-shadow:0 1px 8px rgba(200,91,23,.18);} }
+  @keyframes ink{ 0%{opacity:.25; clip-path:inset(0 100% 0 0); filter:blur(.4px);}
+    18%{opacity:1;} 100%{opacity:1; clip-path:inset(0 0 0 0); filter:blur(0);} }
+  @keyframes stamp{ 0%{opacity:0; transform:scale(1.55) rotate(-13deg);}
+    55%{opacity:1; transform:scale(.93) rotate(3deg);} 78%{transform:scale(1.04) rotate(-1deg);}
+    100%{opacity:1; transform:scale(1) rotate(0);} }
+  @keyframes ring{ 0%{opacity:.6; transform:scale(.55);} 100%{opacity:0; transform:scale(1.9);} }
+
+  /* controls (kept outside the plate so a screen-recording stays clean) */
+  .controls{ position:relative; z-index:1; display:flex; flex-wrap:wrap; gap:10px;
+    align-items:center; justify-content:center; }
+  select,button{ font-family:inherit; font-size:13px; color:var(--cream);
+    background:#2a2117; border:1px solid #6a5736; border-radius:7px; padding:8px 14px; cursor:pointer; }
+  button:hover,select:hover{ border-color:var(--warm); }
+  label.loop{ color:#caa86a; font-size:12.5px; display:flex; align-items:center; gap:6px; font-family:Georgia,serif; }
+  .hint{ color:#8a7350; font-size:11px; font-family:Georgia,serif; text-align:center; max-width:560px; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="glow"></div>
+    <div class="plate" id="plate">
+      <div class="frame"></div>
+      <div class="masthead"><div class="brand" id="brand">Dr. UV's</div></div>
+      <div class="digits" id="digits"></div>
+      <div class="parade" id="parade"></div>
+      <div class="title" id="title">—</div>
+      <div class="note" id="note"></div>
+      <div class="equation" id="equation"></div>
+      <div class="divider"></div>
+      <div class="ledger" id="ledger"></div>
+      <div class="verdict" id="verdict"></div>
+      <div class="colophon">© 2026 Dr. UV · Proprietary &amp; Confidential</div>
+      <div class="seal-ring"></div>
+      <div class="seal" id="seal"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <select id="pick" aria-label="Choose plate"></select>
+    <button id="playSound">▶ Play with sound</button>
+    <button id="replay">↻ Replay</button>
+    <label class="loop"><input type="checkbox" id="sound" checked> sound</label>
+    <label class="loop"><input type="checkbox" id="loop" checked> loop</label>
+  </div>
+  <div class="hint" id="status"></div>
+  <div class="hint">Every glyph here is computed and verified in code — the seal stamps only when the math balances.
+  Tap <b>Play with sound</b>, then screen-record this card (with tab/system audio on) for a motion plate whose equation can never drift.</div>
+
+<script>
+const SQ=Math.sqrt;
+const PLATES=[
+  { series:"Elegant Expressions", title:"Terrific Two",
+    digits:"using only the digit 8", parade:null,
+    note:"the fourth root of sixteen, from eights alone",
+    tex:"\\sqrt{\\sqrt{8+8}} \\;=\\; \\tfrac{8}{8}+\\tfrac{8}{8} \\;=\\; 2",
+    parts:[ ()=>SQ(SQ(8+8)), ()=>8/8+8/8 ], target:2 },
+  { series:"Elegant Expressions", title:"One of a Kind",
+    digits:"using only 9 and 7", parade:null,
+    note:"√√16 = 2, and nine minus seven agrees",
+    tex:"\\sqrt{\\sqrt{9+7}} \\;=\\; 9-7 \\;=\\; 2",
+    parts:[ ()=>SQ(SQ(9+7)), ()=>9-7 ], target:2 },
+  { series:"Elegant Expressions", title:"Sweet Sixteen",
+    digits:"using only the integer 16", parade:null,
+    note:"the fifth root (−1+6) of thirty-two, and a double root",
+    tex:"\\sqrt[-1+6]{16+16} \\;=\\; \\sqrt{\\sqrt{16}} \\;=\\; 2",
+    parts:[ ()=>Math.pow(16+16,1/(-1+6)), ()=>SQ(SQ(16)) ], target:2 },
+  { series:"Pan Digital Panorama", title:"Terrific Two",
+    digits:"1 2 3 4 5 6 7 8 9 0 — all used only once", parade:"Pan Digital Parade",
+    note:"every digit once; a double root lands on two",
+    tex:"\\sqrt{\\sqrt{12+3-4+5}} \\;=\\; \\sqrt{6-7+8-\\sqrt9+0} \\;=\\; 2",
+    parts:[ ()=>SQ(SQ(12+3-4+5)), ()=>SQ(6-7+8-SQ(9)+0) ], target:2 },
+  { series:"Pan Digital Panorama", title:"Seventy-Two",
+    digits:"1 2 3 4 5 6 7 8 9 0 — all used only once", parade:"Pan Digital Parade",
+    note:"powers stack, then a √9 trims the gap to 72",
+    tex:"1\\cdot 2^{3}\\cdot(4+5) \\;=\\; 67+8-\\sqrt9+0 \\;=\\; 72",
+    parts:[ ()=>1*2**3*(4+5), ()=>67+8-SQ(9)+0 ], target:72 },
+];
+
+const $=id=>document.getElementById(id);
+const sealSVG=`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs><radialGradient id="g" cx="38%" cy="34%" r="72%">
+    <stop offset="0%" stop-color="var(--seal-hi)"/><stop offset="62%" stop-color="var(--seal)"/>
+    <stop offset="100%" stop-color="var(--seal-lo)"/></radialGradient></defs>
+  <path id="scallop" fill="url(#g)"/></svg>
+  <div class="uv"><div class="big">UV</div><div class="sm">verified · exact</div></div>`;
+
+function scallop(cx,cy,rO,rI,teeth){ let d=""; const N=teeth*2;
+  for(let i=0;i<=N;i++){ const a=(i/N)*Math.PI*2 - Math.PI/2; const r=i%2?rI:rO;
+    const x=cx+r*Math.cos(a), y=cy+r*Math.sin(a); d+=(i?"L":"M")+x.toFixed(1)+" "+y.toFixed(1); }
+  return d+"Z"; }
+
+let idx=0, EPS=1e-9, loopTimer=null;
+
+/* ---------------- warm audio (Web Audio API, fully synthesized) ---------------- */
+let audioCtx=null, master=null, soundOn=true;
+/* iPad/iOS: play a short silent HTML5 clip on the gesture to switch the audio
+   session to playback, so synth audio is heard even in silent mode. */
+const IOS_UNLOCK_SRC="data:audio/wav;base64,UklGRiQZAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let iosAudio=null;
+function iosUnlock(){ try{ if(!iosAudio){ iosAudio=new Audio(IOS_UNLOCK_SRC); iosAudio.setAttribute('playsinline',''); iosAudio.volume=0.001; } iosAudio.currentTime=0; const p=iosAudio.play(); if(p&&p.catch)p.catch(function(){}); }catch(e){} }
+/* an immediate, unmistakable confirmation tone, started at currentTime in-gesture */
+function beepNow(){ if(!audioCtx||audioCtx.state!=='running') return; const t=audioCtx.currentTime;
+  const o=audioCtx.createOscillator(); o.type='sine'; o.frequency.value=523.25;
+  const g=audioCtx.createGain(); o.connect(g); g.connect(master);
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.28,t+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+0.28); o.start(t); o.stop(t+0.32); }
+function ensureAudio(){
+  try{
+    if(!audioCtx){
+      const AC = window.AudioContext||window.webkitAudioContext;
+      if(!AC) return Promise.reject(new Error('no WebAudio'));
+      audioCtx = new AC();
+      master = audioCtx.createGain(); master.gain.value=0.85; master.connect(audioCtx.destination);
+    }
+    return (audioCtx.state!=='running') ? audioCtx.resume() : Promise.resolve();
+  }catch(e){ return Promise.reject(e); }
+}
+function bell(freq, when, dur, peak, type='sine'){
+  const t=audioCtx.currentTime+when;
+  const o=audioCtx.createOscillator(); o.type=type; o.frequency.value=freq;
+  const lp=audioCtx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=2400;
+  const g=audioCtx.createGain();
+  o.connect(lp); lp.connect(g); g.connect(master);
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.linearRampToValueAtTime(peak,t+0.014);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.start(t); o.stop(t+dur+0.05);
+}
+function pad(when, dur, peak){
+  const t=audioCtx.currentTime+when;
+  [130.81,196.00].forEach(f=>{                 /* C3 + G3, warm bed */
+    const o=audioCtx.createOscillator(); o.type='triangle'; o.frequency.value=f;
+    const o2=audioCtx.createOscillator(); o2.type='sine'; o2.frequency.value=f*1.005;
+    const lp=audioCtx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=820;
+    const g=audioCtx.createGain();
+    o.connect(lp); o2.connect(lp); lp.connect(g); g.connect(master);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(peak,t+0.9);
+    g.gain.setValueAtTime(peak,t+dur-1.1);
+    g.gain.linearRampToValueAtTime(0.0001,t+dur);
+    o.start(t); o2.start(t); o.stop(t+dur+0.1); o2.stop(t+dur+0.1);
+  });
+}
+function shimmer(when, dur, peak){
+  const t=audioCtx.currentTime+when;
+  const o=audioCtx.createOscillator(); o.type='sine'; o.frequency.value=1046.5;  /* C6 */
+  const lfo=audioCtx.createOscillator(); lfo.frequency.value=6;
+  const lfg=audioCtx.createGain(); lfg.gain.value=4; lfo.connect(lfg); lfg.connect(o.frequency);
+  const g=audioCtx.createGain(); o.connect(g); g.connect(master);
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(peak,t+0.35);
+  g.gain.linearRampToValueAtTime(0.0001,t+dur);
+  o.start(t); lfo.start(t); o.stop(t+dur+0.05); lfo.stop(t+dur+0.05);
+}
+function thump(when){
+  const t=audioCtx.currentTime+when;
+  const o=audioCtx.createOscillator(); o.type='sine';
+  o.frequency.setValueAtTime(140,t); o.frequency.exponentialRampToValueAtTime(46,t+0.18);
+  const g=audioCtx.createGain(); o.connect(g); g.connect(master);
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.5,t+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+0.36);
+  o.start(t); o.stop(t+0.42);
+  const dur=0.12, buf=audioCtx.createBuffer(1, audioCtx.sampleRate*dur, audioCtx.sampleRate);
+  const d=buf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length);
+  const n=audioCtx.createBufferSource(); n.buffer=buf;
+  const nf=audioCtx.createBiquadFilter(); nf.type='lowpass'; nf.frequency.value=1300;
+  const ng=audioCtx.createGain(); ng.gain.value=0.22;
+  n.connect(nf); nf.connect(ng); ng.connect(master); n.start(t);
+}
+function playAudio(){
+  if(!audioCtx || !soundOn || audioCtx.state!=='running') return;
+  const p=PLATES[idx];
+  pad(0, 7.0, 0.045);                        /* warm drone underneath */
+  bell(261.63,0.15,1.2,0.16);                /* masthead  C4 */
+  bell(293.66,0.55,1.2,0.15);                /* digits    D4 */
+  if(p.parade) bell(329.63,0.85,1.2,0.15);   /* parade    E4 */
+  bell(392.00,1.15,1.5,0.18);                /* title     G4 */
+  bell(440.00,1.70,1.2,0.13);                /* note      A4 */
+  shimmer(2.05,1.45,0.045);                  /* ink flow */
+  thump(3.95);                               /* seal press */
+  bell(261.63,4.12,2.0,0.12);                /* resolve chord: C4 */
+  bell(523.25,4.14,1.8,0.11);                /* C5 */
+  bell(659.25,4.16,1.8,0.10);                /* E5 */
+  bell(783.99,4.30,1.7,0.085);              /* soft G5 sparkle */
+}
+
+function build(){ const sel=$('pick'); PLATES.forEach((p,i)=>{ const o=document.createElement('option');
+  o.value=i; o.textContent=`${p.series} · ${p.title}`; sel.appendChild(o); }); }
+
+function render(){
+  const p=PLATES[idx];
+  $('brand').textContent="Dr. UV's "+p.series;
+  $('digits').textContent=p.digits||''; $('digits').style.display=p.digits?'':'none';
+  $('parade').textContent=p.parade||''; $('parade').style.display=p.parade?'':'none';
+  $('title').textContent=p.title; $('note').textContent=p.note||'';
+  const eq=$('equation');
+  if(window.katex) katex.render(p.tex, eq, {throwOnError:false, displayMode:true});
+  else eq.textContent=p.tex;
+  const vals=p.parts.map(f=>f());
+  const ok=vals.every(v=>Math.abs(v-p.target)<EPS);
+  $('ledger').innerHTML =
+    `<div class="lrow"><span>Every form evaluates to</span><b>${ok?p.target:'—'}</b></div>`+
+    `<div class="lrow"><span>Target</span><b>${p.target}</b></div>`;
+  $('verdict').textContent = ok ? 'Verified exact — sealed' : 'Does not balance — held';
+  $('seal').innerHTML = sealSVG;
+  $('seal').querySelector('#scallop').setAttribute('d', scallop(50,50,48,40,22));
+  $('seal').style.visibility = ok ? '' : 'hidden';
+  $('seal').dataset.ok = ok ? '1' : '0';
+}
+
+function play(){
+  const pl=$('plate'); clearTimeout(loopTimer);
+  pl.classList.remove('play'); void pl.offsetWidth;     /* reflow to restart */
+  pl.classList.add('play');
+  if(soundOn && audioCtx && audioCtx.state==='running' && $('seal').dataset.ok==='1') playAudio();
+  if($('loop').checked) loopTimer=setTimeout(play, 7600);
+}
+
+build();
+function boot(){ render(); play(); }
+if(window.katex) boot();
+else { const s=[...document.scripts].find(x=>x.src.includes('katex'));
+  s ? s.addEventListener('load', boot) : window.addEventListener('load', boot); }
+
+$('pick').addEventListener('change', e=>{ idx=+e.target.value; render(); play(); });
+function go(){
+  iosUnlock();                              // iPad: switch audio session (plays in silent mode)
+  try{
+    if(!audioCtx){
+      const AC = window.AudioContext||window.webkitAudioContext;
+      if(AC){ audioCtx=new AC(); master=audioCtx.createGain(); master.gain.value=0.85; master.connect(audioCtx.destination); }
+    }
+  }catch(e){ audioCtx=null; }
+  if(!audioCtx){ play(); setStatus('No audio support in this view — open the file in Safari.'); return; }
+  if(audioCtx.state==='running'){ beepNow(); play(); setStatus('♪ sound on — if silent: iPad mute switch off + media volume up'); return; }
+  setStatus('starting sound…');
+  audioCtx.resume().then(()=>{
+    if(audioCtx.state==='running'){ beepNow(); play(); setStatus('♪ sound on — if silent: iPad mute switch off + media volume up'); }
+    else { play(); setStatus('Audio blocked here — open the file in Safari for sound.'); }
+  }).catch(()=>{ play(); setStatus('Audio blocked in this view — open the file in Safari for sound.'); });
+}
+$('replay').addEventListener('click', go);
+$('playSound').addEventListener('click', go);
+$('sound').addEventListener('change', e=>{ soundOn=e.target.checked; if(soundOn) ensureAudio(); });
+$('loop').addEventListener('change', e=>{ if(!e.target.checked) clearTimeout(loopTimer); else play(); });
+function setStatus(t){ const s=$('status'); if(s) s.textContent=t; }
+</script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr. UV's Pan Digital Book — Equation Swapper</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Great+Vibes&family=Caveat:wght@500;600;700&display=swap');
+
+:root{
+  --teal:#1e5142; --teal-dk:#103024; --teal-lt:#2f6b58;
+  --parch1:#f6e9c8; --parch2:#e9d29e; --parch-edge:#cba96f;
+  --ink:#3a2912; --ink2:#241708;
+  --blue:#22356f;
+  --brass:#c19a47; --brass-dk:#7c5a23;
+  --gold:#b89134;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100vh; padding:30px 16px;
+  background:radial-gradient(120% 120% at 50% 20%, #14392c, #0a1f18 80%);
+  display:flex; flex-direction:column; align-items:center; gap:22px;
+  font-family:'Cinzel',Georgia,serif; color:var(--ink);
+}
+
+/* ---------- SCENE (fixed size for reproducible screenshots) ---------- */
+.scene{
+  position:relative; width:760px; height:560px; max-width:100%;
+  border-radius:14px; overflow:hidden;
+  background:radial-gradient(120% 120% at 50% 40%, var(--teal-lt) 0%, var(--teal) 42%, var(--teal-dk) 100%);
+  box-shadow:0 24px 55px rgba(0,0,0,.5), inset 0 0 90px rgba(0,0,0,.5);
+}
+.scene::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(140% 140% at 50% 50%, transparent 55%, rgba(0,0,0,.45) 100%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.06'/></svg>");
+}
+.doodles{position:absolute; inset:0; color:#cdb46a; opacity:.16; pointer-events:none; font-family:'Caveat',cursive;}
+.doodles span{position:absolute; font-size:40px;}
+
+/* ---------- BOOK ---------- */
+.book{
+  position:absolute; inset:42px 44px;
+  border-radius:6px 10px 10px 6px;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,0) 5%, rgba(0,0,0,0) 95%, rgba(0,0,0,.12) 100%),
+    radial-gradient(130% 120% at 50% 30%, var(--parch1) 0%, var(--parch2) 70%, var(--parch-edge) 100%);
+  box-shadow:0 16px 32px rgba(0,0,0,.45), inset 0 0 60px rgba(120,80,30,.28);
+  border:1px solid rgba(120,80,30,.35);
+}
+.book::before{
+  content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; mix-blend-mode:multiply;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23p)' opacity='0.05'/></svg>");
+}
+.orrery{position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:.5;}
+
+/* ---------- ORNATE FRAME ---------- */
+.frame{
+  position:absolute; inset:20px;
+  border:2px solid var(--gold); border-radius:4px;
+  box-shadow:inset 0 0 0 4px rgba(255,255,255,.18), inset 0 0 0 6px var(--gold);
+  padding:14px 34px; display:flex; flex-direction:column; align-items:center;
+}
+.frame::after{content:""; position:absolute; inset:7px; border:1px solid rgba(120,80,30,.35); border-radius:3px; pointer-events:none;}
+
+.date{position:absolute; left:8px; top:2px; color:var(--blue); font-family:'Great Vibes',cursive; line-height:.8; text-align:center; filter:drop-shadow(0 1px 0 rgba(255,255,255,.4));}
+.date .dn{font-size:42px; display:inline-block; transform:translateX(-5px);}
+.date .dl{display:block; height:2px; width:50px; background:var(--blue); transform:rotate(-18deg); margin:-4px auto;}
+.date .dd{font-size:42px; display:inline-block; transform:translateX(7px);}
+
+.medal{position:absolute; top:-30px; left:50%; transform:translateX(-50%); z-index:4;}
+
+.header{margin-top:66px; font-family:'Great Vibes',cursive; font-size:52px; color:var(--blue); line-height:1; text-shadow:0 1px 0 rgba(255,255,255,.45); letter-spacing:1px;}
+.titles{margin-top:12px; font-family:'Cinzel',serif; font-weight:700; font-size:27px; letter-spacing:1.5px; color:var(--ink2); text-align:center; line-height:1.15;}
+.eqbox{flex:1; width:100%; display:flex; align-items:center; justify-content:center; padding:6px 4px;}
+.eq{font-family:'Caveat',cursive; color:var(--ink2); font-size:40px; white-space:nowrap; line-height:1; transform:rotate(-.6deg);}
+.foot{position:absolute; bottom:4px; left:50%; transform:translateX(-50%); color:var(--brass-dk); font-size:32px; opacity:.8;}
+
+/* math typesetting */
+.eq .rad{display:inline-flex; align-items:flex-start;}
+.eq .rsign{font-size:1.08em; line-height:.9; transform:translateY(-2px);}
+.eq .rcand{border-top:2.5px solid currentColor; padding:3px 5px 0 2px; margin-left:-3px;}
+.eq .vinc{border-top:2.5px solid currentColor; padding-top:1px;}
+.eq sup{font-size:.62em;}
+.eq .op{margin:0 .18em;}
+
+.cog{position:absolute; z-index:3; filter:drop-shadow(0 2px 2px rgba(0,0,0,.3));}
+.glyph{position:absolute; z-index:3; color:var(--brass-dk); font-family:'Cinzel',serif; opacity:.85;}
+
+/* ---------- EDITOR ---------- */
+.editor{width:760px; max-width:100%; background:#0f2b22; border:1px solid #2c5446; border-radius:12px; padding:18px 20px; color:#dff0e8; font-family:system-ui,sans-serif;}
+.editor h4{margin:0 0 14px; font-family:'Cinzel',serif; color:#f0d79a; letter-spacing:.5px; font-size:15px;}
+.row{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px;}
+.field{flex:1; min-width:150px;}
+.field.sm{flex:0 0 92px; min-width:92px;}
+.field label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:#8fb6a6; margin-bottom:5px;}
+.field input{width:100%; padding:9px 11px; border-radius:7px; border:1px solid #2f5a4a; background:#0a2019; color:#eafff5; font-size:14px; font-family:ui-monospace,monospace;}
+.field input:focus{outline:none; border-color:#5fae93;}
+.presets{display:flex; gap:8px; flex-wrap:wrap; margin:2px 0 14px;}
+.chip{cursor:pointer; border:1px solid #356b58; background:#143b30; color:#cfeadd; border-radius:20px; padding:6px 13px; font-size:12.5px; font-family:'Caveat',cursive; font-weight:600;}
+.chip:hover{background:#1c4d3e;}
+.hint{font-size:11.5px; color:#9cc3b3; line-height:1.6; margin-top:2px;}
+.hint code{background:#0a2019; padding:1px 6px; border-radius:4px; color:#f0d79a; font-family:ui-monospace,monospace;}
+.btns{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
+.btns button{cursor:pointer; border:none; border-radius:8px; padding:10px 16px; font-size:13px; font-weight:600; font-family:system-ui,sans-serif;}
+.btn-a{background:#caa24a; color:#241708;}
+.btn-b{background:#1f4a3c; color:#dff0e8; border:1px solid #356b58;}
+body.clean .editor{display:none;}
+body.clean{padding-top:40px;}
+</style>
+</head>
+<body>
+
+  <div class="scene">
+    <div class="doodles">
+      <span style="left:7%;top:13%;">7</span><span style="left:80%;top:9%;">π</span>
+      <span style="left:16%;top:75%;">∑</span><span style="left:87%;top:64%;">√</span>
+      <span style="left:47%;top:86%;">∞</span><span style="left:28%;top:28%;">3</span>
+      <span style="left:66%;top:42%;">2</span><span style="left:90%;top:34%;">5</span>
+    </div>
+
+    <div class="book">
+      <svg class="orrery" viewBox="0 0 600 450" preserveAspectRatio="none">
+        <g fill="none" stroke="#8a5a28" stroke-width="1" opacity="0.5">
+          <circle cx="300" cy="225" r="150"/><circle cx="300" cy="225" r="110"/>
+          <ellipse cx="300" cy="225" rx="180" ry="90"/>
+          <ellipse cx="300" cy="225" rx="90" ry="180" transform="rotate(28 300 225)"/>
+          <circle cx="300" cy="225" r="205"/>
+        </g>
+      </svg>
+
+      <div class="frame">
+        <div class="date" id="date"></div>
+
+        <div class="medal">
+          <svg width="124" height="124" viewBox="0 0 120 120">
+            <defs>
+              <radialGradient id="cop" cx="40%" cy="35%" r="75%">
+                <stop offset="0%" stop-color="#f3c694"/><stop offset="45%" stop-color="#c07b3a"/><stop offset="100%" stop-color="#6d3c18"/>
+              </radialGradient>
+              <path id="ringPath" d="M60,60 m -42,0 a 42,42 0 1,1 84,0 a 42,42 0 1,1 -84,0"/>
+            </defs>
+            <circle cx="60" cy="60" r="56" fill="url(#cop)" stroke="#5f3414" stroke-width="3"/>
+            <circle cx="60" cy="60" r="48" fill="none" stroke="#5f3414" stroke-width="1.5" opacity="0.7"/>
+            <text font-family="Cinzel,serif" font-size="9.5" font-weight="700" fill="#3a1f0c" letter-spacing="2">
+              <textPath href="#ringPath" startOffset="2%">★ DR · UV'S · MATH · UNIVERSE ★</textPath>
+            </text>
+            <circle cx="60" cy="60" r="26" fill="#7c451d" stroke="#3a1f0c" stroke-width="1.5"/>
+            <text x="60" y="68" text-anchor="middle" font-family="Cinzel,serif" font-weight="700" font-size="20" fill="#f3c694">257</text>
+          </svg>
+        </div>
+
+        <div class="header" id="header">Pan Digital Book</div>
+        <div class="titles" id="titles"></div>
+        <div class="eqbox"><div class="eq" id="eq"></div></div>
+        <div class="foot">∞</div>
+
+        <div class="cog" id="cog1" style="top:36px;left:16px;"></div>
+        <div class="cog" id="cog2" style="top:20px;right:18px;"></div>
+        <div class="cog" id="cog3" style="bottom:32px;right:20px;"></div>
+        <div class="cog" id="cog4" style="bottom:36px;left:22px;"></div>
+        <div class="glyph" style="top:84px;right:26px;font-size:27px;">π</div>
+        <div class="glyph" style="bottom:74px;left:28px;font-size:25px;">∑</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="editor">
+    <h4>⚙ EQUATION SWAPPER &nbsp;—&nbsp; the art is locked; only the math changes</h4>
+
+    <div class="presets" id="presets"></div>
+
+    <div class="row">
+      <div class="field sm"><label>Date</label><input id="inDate" value="5/26"></div>
+      <div class="field"><label>Title line 1</label><input id="inT1" value="DR. UV'S PAN DIGITAL"></div>
+      <div class="field"><label>Title line 2</label><input id="inT2" value="DELIGHTS"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Equation</label><input id="inEq" value="sqrt{12*3} * 4 = -56 + 78 + sqrt{9} - 0!"></div>
+    </div>
+
+    <div class="hint">
+      <code>sqrt{...}</code> radical &nbsp;·&nbsp; <code>^{2}</code> or <code>^2</code> power &nbsp;·&nbsp; <code>bar{5}</code> vinculum overbar &nbsp;·&nbsp; <code>*</code> → × &nbsp;·&nbsp; <code>!</code> factorial.
+      &nbsp; Long equations auto-shrink to fit.
+    </div>
+
+    <div class="btns">
+      <button class="btn-b" id="btnClean">⛶ Hide panel — then Win+Shift+S the book</button>
+    </div>
+  </div>
+
+<script>
+(function(){
+  var presets=[
+    {n:"Pan Digital", d:"5/26", t1:"DR. UV'S PAN DIGITAL", t2:"DELIGHTS", e:"sqrt{12*3} * 4 = -56 + 78 + sqrt{9} - 0!"},
+    {n:"√55225=235", d:"5/26", t1:"HOLY QUARTET", t2:"THE SQUARE ROOT", e:"sqrt{55225} = 235"},
+    {n:"15³=3375", d:"5/26", t1:"HOLY QUARTET", t2:"THE CUBE", e:"15^3 = 3375"},
+    {n:"257 identity", d:"5/26", t1:"HOLY QUARTET", t2:"PYTHAGOREAN 257", e:"257 = sqrt{255^2 + 32^2}"},
+    {n:"17=2+3+5+7", d:"5/26", t1:"PRIME DIGIT SUM", t2:"THE TEEN 17", e:"17 = 2 + 3 + 5 + 7"}
+  ];
+
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  function renderMath(input){
+    var i=0;
+    function single(){
+      if(input.startsWith('sqrt{',i)||input.startsWith('bar{',i)) return seq(true);
+      var c=input[i]||''; i++; return esc(c);
+    }
+    function seq(stop){
+      var out='';
+      while(i<input.length){
+        var c=input[i];
+        if(stop && c==='}'){break;}
+        if(input.startsWith('sqrt{',i)){ i+=5; var inr=seq(true); i++; out+='<span class="rad"><span class="rsign">&#8730;</span><span class="rcand">'+inr+'</span></span>'; continue; }
+        if(input.startsWith('bar{',i)){ i+=4; var inb=seq(true); i++; out+='<span class="vinc">'+inb+'</span>'; continue; }
+        if(c==='^'){ i++; var sup; if(input[i]==='{'){ i++; sup=seq(true); i++; } else { sup=single(); } out+='<sup>'+sup+'</sup>'; continue; }
+        i++;
+        if(c==='*'||c==='\u00d7') out+='<span class="op">&#215;</span>';
+        else if(c==='=') out+='<span class="op">=</span>';
+        else if(c==='+') out+='<span class="op">+</span>';
+        else if(c==='-'||c==='\u2212') out+='<span class="op">&#8722;</span>';
+        else out+=esc(c);
+      }
+      return out;
+    }
+    return seq(false);
+  }
+
+  function fit(el){
+    el.style.fontSize='40px'; var box=el.parentElement, size=40;
+    while(el.scrollWidth>box.clientWidth-8 && size>16){ size-=1; el.style.fontSize=size+'px'; }
+  }
+
+  function setDate(v){
+    var d=document.getElementById('date'), p=String(v).split('/');
+    if(p.length===2) d.innerHTML='<span class="dn">'+esc(p[0])+'</span><span class="dl"></span><span class="dd">'+esc(p[1])+'</span>';
+    else d.innerHTML='<span class="dn">'+esc(v)+'</span>';
+  }
+
+  function gearSVG(teeth,fill){
+    var R=46,r=35,hole=14,tw=11,id='g'+teeth+fill.replace('#','');
+    var s='<svg width="64" height="64" viewBox="0 0 100 100"><defs><radialGradient id="'+id+'" cx="38%" cy="34%" r="72%"><stop offset="0%" stop-color="#e8c98a"/><stop offset="60%" stop-color="'+fill+'"/><stop offset="100%" stop-color="#5e4115"/></radialGradient></defs>';
+    var g='url(#'+id+')';
+    for(var k=0;k<teeth;k++){ var ang=k*(360/teeth); s+='<rect x="'+(50-tw/2)+'" y="'+(50-R)+'" width="'+tw+'" height="'+(R-r+8)+'" rx="2" fill="'+g+'" stroke="#5e4115" stroke-width="1.5" transform="rotate('+ang+' 50 50)"/>'; }
+    s+='<circle cx="50" cy="50" r="'+r+'" fill="'+g+'" stroke="#5e4115" stroke-width="2.5"/>';
+    s+='<circle cx="50" cy="50" r="'+hole+'" fill="#e8d29c" stroke="#5e4115" stroke-width="2.5"/>';
+    for(var b=0;b<6;b++){ var ba=b*60*Math.PI/180; s+='<circle cx="'+(50+22*Math.cos(ba)).toFixed(1)+'" cy="'+(50+22*Math.sin(ba)).toFixed(1)+'" r="2.4" fill="#4a3210"/>'; }
+    return s+'</svg>';
+  }
+  document.getElementById('cog1').innerHTML=gearSVG(10,'#c19a47');
+  var c2=document.getElementById('cog2'); c2.innerHTML=gearSVG(12,'#b88f3f'); c2.style.transform='scale(1.25)';
+  var c3=document.getElementById('cog3'); c3.innerHTML=gearSVG(12,'#c19a47'); c3.style.transform='scale(1.35)';
+  document.getElementById('cog4').innerHTML=gearSVG(9,'#b88f3f');
+
+  function update(){
+    setDate(document.getElementById('inDate').value);
+    document.getElementById('titles').innerHTML=esc(document.getElementById('inT1').value)+'<br>'+esc(document.getElementById('inT2').value);
+    var eq=document.getElementById('eq');
+    eq.innerHTML=renderMath(document.getElementById('inEq').value);
+    fit(eq);
+  }
+  ['inDate','inT1','inT2','inEq'].forEach(function(id){ document.getElementById(id).addEventListener('input',update); });
+
+  var pc=document.getElementById('presets');
+  presets.forEach(function(p){
+    var b=document.createElement('button'); b.className='chip'; b.textContent=p.n;
+    b.addEventListener('click',function(){
+      document.getElementById('inDate').value=p.d;
+      document.getElementById('inT1').value=p.t1;
+      document.getElementById('inT2').value=p.t2;
+      document.getElementById('inEq').value=p.e;
+      update();
+    });
+    pc.appendChild(b);
+  });
+
+  document.getElementById('btnClean').addEventListener('click',function(){
+    document.body.classList.toggle('clean');
+    this.textContent=document.body.classList.contains('clean')?'⚙ Show editor panel':'⛶ Hide panel — then Win+Shift+S the book';
+  });
+
+  update();
+  window.addEventListener('load',update);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(update);
+})();
+</script>
+</body>
+</html>

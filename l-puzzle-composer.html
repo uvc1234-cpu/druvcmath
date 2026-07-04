@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Math Puzzle Composer v4</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1a1a2e;--panel:#16213e;--accent:#0f3460;--hi:#e94560;--text:#eee}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100vh;overflow:hidden;user-select:none}
+
+/* ── TOP BAR ── */
+#topbar{background:var(--panel);border-bottom:2px solid var(--accent);padding:4px 10px;display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap}
+#topbar h1{font-size:12px;font-weight:900;letter-spacing:2px;color:#f0c040}
+.tb-btn{background:var(--accent);border:none;color:#fff;padding:4px 9px;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap}
+.tb-btn:hover{background:var(--hi)}
+.tb-btn.active{background:#e94560;box-shadow:0 0 0 2px #fff}
+.tb-sep{width:1px;height:20px;background:#444;flex-shrink:0}
+.tb-lbl{font-size:11px;color:#aaa;white-space:nowrap}
+select.tb-sel{font-size:11px;padding:3px 5px;border-radius:4px;background:#222;color:#fff;border:1px solid #555}
+
+/* FONT SIZE CONTROL (shows when node selected) */
+#font-ctrl{display:none;align-items:center;gap:4px;background:#0a2a0a;border:1px solid #0f5;border-radius:4px;padding:2px 8px}
+#font-ctrl.show{display:flex}
+#font-ctrl span{font-size:11px;color:#0f0}
+#font-ctrl button{background:#0f3;color:#000;border:none;border-radius:3px;width:22px;height:22px;font-size:14px;font-weight:900;cursor:pointer;line-height:1}
+#font-val{font-size:12px;font-weight:700;color:#0f0;min-width:28px;text-align:center}
+
+/* DRAW TOOLBAR */
+#drawtool{display:none;align-items:center;gap:6px;padding:3px 8px;background:#0a0a1e;border-bottom:1px solid #333;flex-shrink:0}
+#drawtool.visible{display:flex}
+.dtool-btn{background:#222;border:1px solid #555;color:#fff;padding:3px 9px;border-radius:4px;cursor:pointer;font-size:11px}
+.dtool-btn.active{background:#e94560;border-color:#e94560}
+#draw-color{width:32px;height:24px;padding:1px;cursor:pointer;border-radius:3px;border:1px solid #555}
+
+/* MAIN */
+#main{display:flex;flex:1;overflow:hidden;position:relative}
+
+/* PALETTE */
+#palette{width:160px;background:var(--panel);border-right:2px solid var(--accent);display:flex;flex-direction:column;overflow-y:auto;padding:5px;gap:2px;flex-shrink:0}
+.pal-head{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#777;margin:5px 0 2px;border-top:1px solid #2a2a4a;padding-top:4px}
+.pal-head:first-child{border-top:none;margin-top:0}
+.pal-row{display:flex;flex-wrap:wrap;gap:3px}
+
+/* TILES */
+.tile{display:inline-flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.2);border-radius:4px;cursor:grab;font-weight:700;flex-shrink:0;transition:transform .1s,box-shadow .1s}
+.tile:hover{transform:scale(1.1);box-shadow:0 0 6px rgba(255,255,255,.35)}
+.tile:active{cursor:grabbing}
+
+/* CANVAS WRAP */
+#canvas-wrap{flex:1;position:relative;overflow:hidden;background:#0e0e1e;
+  background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:40px 40px}
+#canvas{position:absolute;top:0;left:0;width:6000px;height:4000px;transform-origin:0 0;z-index:5}
+
+/* DRAW CANVAS */
+#drawCanvas{position:absolute;top:0;left:0;pointer-events:none;z-index:20}
+#drawCanvas.active{pointer-events:all}
+
+/* NODES */
+.node{position:absolute;border:2px solid rgba(255,255,255,.35);border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:move;z-index:10;overflow:visible}
+.node:hover{box-shadow:0 0 0 3px rgba(255,255,255,.4)}
+.node.selected{box-shadow:0 0 0 3px #e94560!important}
+.node.snap-hi{box-shadow:0 0 0 3px #00ffcc!important}
+.node-del{position:absolute;top:-9px;right:-9px;width:18px;height:18px;background:#c00;color:#fff;border-radius:50%;font-size:11px;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:30;border:1px solid #fff}
+.node:hover .node-del{display:flex}
+.node-rsz{position:absolute;bottom:-5px;right:-5px;width:12px;height:12px;background:#0f3460;border:1px solid #aaa;cursor:se-resize;z-index:30;border-radius:2px;display:none}
+.node:hover .node-rsz{display:block}
+/* font badge — shows current font size on hover */
+.node-fs{position:absolute;top:-9px;left:-1px;background:#333;color:#0f0;border-radius:3px;font-size:9px;padding:1px 4px;display:none;z-index:25;pointer-events:none}
+.node:hover .node-fs{display:block}
+
+/* FRACTION */
+.node.frac{flex-direction:column;background:#fff!important;color:#000!important;padding:0;min-width:50px;min-height:50px}
+.frac-num,.frac-den{width:100%;flex:1;display:flex;align-items:center;justify-content:center;font-weight:700;padding:2px 5px;min-height:22px;cursor:text;position:relative}
+.frac-bar{width:100%;height:2px;background:#000;flex-shrink:0}
+
+/* SQRT — white stroke on dark bg */
+.node.sqrt-node{background:transparent!important;border:none!important;overflow:visible}
+.sqsvg path{stroke:#fff;stroke-width:3;fill:none;stroke-linejoin:round}
+
+/* EXP */
+.node.exp-node{border-style:dashed!important;background:#fff8e0;color:#000;min-width:20px;min-height:20px}
+
+/* STATUS */
+#statusbar{background:var(--panel);border-top:1px solid #333;font-size:10px;color:#888;padding:3px 10px;flex-shrink:0}
+
+/* GHOST */
+#ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.8;display:none;align-items:center;justify-content:center;font-weight:700;border:2px solid rgba(255,255,255,.6);border-radius:4px}
+
+/* CONTEXT MENU */
+#ctx{position:fixed;z-index:9998;background:#1a1a2e;border:1px solid #444;border-radius:6px;padding:4px 0;display:none;min-width:170px;box-shadow:0 4px 20px rgba(0,0,0,.7)}
+#ctx .ci{padding:7px 16px;font-size:12px;cursor:pointer;color:#ddd}
+#ctx .ci:hover{background:#0f3460}
+#ctx hr{border-color:#333;margin:3px 0}
+#ctx .ctx-head{padding:4px 12px;font-size:10px;color:#888;text-transform:uppercase}
+
+@media print{
+  #topbar,#palette,#statusbar,#drawtool{display:none!important}
+  body{background:#fff}
+  #canvas-wrap{background:#fff!important;overflow:visible}
+  #canvas{transform:none!important;background:#fff;position:relative}
+  .node-del,.node-rsz,.node-fs{display:none!important}
+  .node{box-shadow:none!important}
+  .sqsvg path{stroke:#000!important}
+}
+</style>
+</head>
+<body>
+<div id="ghost"></div>
+<div id="ctx"></div>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <h1>∑ MATH PUZZLE COMPOSER</h1>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="clearAll()">🗑 Clear</button>
+  <button class="tb-btn" onclick="savePNG()">💾 Save PNG</button>
+  <button class="tb-btn" onclick="window.print()">🖨 Print/PDF</button>
+  <div class="tb-sep"></div>
+  <span class="tb-lbl">Zoom:</span>
+  <select class="tb-sel" id="zoom-sel" onchange="setZoom(+this.value)">
+    <option value=".5">50%</option><option value=".75">75%</option>
+    <option value="1" selected>100%</option><option value="1.25">125%</option>
+    <option value="1.5">150%</option><option value="2">200%</option>
+  </select>
+  <div class="tb-sep"></div>
+  <span class="tb-lbl">Snap:</span>
+  <select class="tb-sel" id="snap-sel">
+    <option value="magnetic" selected>Magnetic</option>
+    <option value="grid">Grid</option>
+    <option value="none">None</option>
+  </select>
+  <div class="tb-sep"></div>
+  <!-- FONT SIZE CONTROL -->
+  <div id="font-ctrl">
+    <span>Font:</span>
+    <button onclick="adjFont(-2)">−</button>
+    <span id="font-val">18</span>
+    <button onclick="adjFont(+2)">+</button>
+  </div>
+  <div class="tb-sep" id="font-sep" style="display:none"></div>
+  <button class="tb-btn" id="draw-toggle" onclick="toggleDraw()">✏️ Draw</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" id="del-btn" style="display:none;background:#800" onclick="deleteSelected()">✕ Delete</button>
+</div>
+
+<!-- DRAW TOOLBAR -->
+<div id="drawtool">
+  <span class="tb-lbl">Tool:</span>
+  <button class="dtool-btn active" id="dt-pen" onclick="setDrawTool('pen')">🖊 Pen</button>
+  <button class="dtool-btn" id="dt-erase" onclick="setDrawTool('erase')">⌫ Erase</button>
+  <span class="tb-lbl" style="margin-left:6px">Color:</span>
+  <input type="color" id="draw-color" value="#ff8800">
+  <span class="tb-lbl">Size:</span>
+  <select class="tb-sel" id="draw-size">
+    <option value="2">Thin</option>
+    <option value="4" selected>Medium</option>
+    <option value="8">Thick</option>
+    <option value="20">Brush</option>
+  </select>
+  <button class="dtool-btn" onclick="clearDrawing()" style="margin-left:8px;background:#600">🗑 Clear drawing</button>
+  <span style="font-size:10px;color:#666;margin-left:10px">D=toggle draw · E=erase</span>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+<!-- PALETTE -->
+<div id="palette">
+
+  <div class="pal-head">Prime Letters</div>
+  <div class="pal-row">
+    <div class="tile" style="width:44px;height:44px;font-size:20px;background:#ffff00;color:#000" draggable="true" data-type="block" data-label="P" data-bg="#ffff00" data-fg="#000" data-w="48" data-h="48" data-fs="20">P</div>
+    <div class="tile" style="width:44px;height:44px;font-size:20px;background:#ff2222;color:#fff" draggable="true" data-type="block" data-label="Q" data-bg="#ff2222" data-fg="#fff" data-w="48" data-h="48" data-fs="20">Q</div>
+    <div class="tile" style="width:44px;height:44px;font-size:20px;background:#00cc00;color:#fff" draggable="true" data-type="block" data-label="R" data-bg="#00cc00" data-fg="#fff" data-w="48" data-h="48" data-fs="20">R</div>
+    <div class="tile" style="width:44px;height:44px;font-size:20px;background:#0044ff;color:#fff" draggable="true" data-type="block" data-label="S" data-bg="#0044ff" data-fg="#fff" data-w="48" data-h="48" data-fs="20">S</div>
+  </div>
+
+  <div class="pal-head">Colors</div>
+  <div class="pal-row" id="cp"></div>
+
+  <div class="pal-head">Blank / Gray</div>
+  <div class="pal-row">
+    <div class="tile" style="width:42px;height:42px;font-size:18px;background:#fff;color:#000;border-color:#999" draggable="true" data-type="block" data-label="" data-bg="#ffffff" data-fg="#000" data-w="48" data-h="48" data-fs="18">□</div>
+    <div class="tile" style="width:42px;height:42px;font-size:18px;background:#888;color:#fff" draggable="true" data-type="block" data-label="" data-bg="#888" data-fg="#fff" data-w="48" data-h="48" data-fs="18">▪</div>
+    <div class="tile" style="width:42px;height:42px;font-size:18px;background:#eee;color:#000;border-color:#999" draggable="true" data-type="block" data-label="?" data-bg="#eee" data-fg="#000" data-w="48" data-h="48" data-fs="18">?</div>
+  </div>
+
+  <div class="pal-head">Arithmetic</div>
+  <div class="pal-row" id="op"></div>
+
+  <div class="pal-head">Relations</div>
+  <div class="pal-row" id="rel"></div>
+
+  <div class="pal-head">Brackets</div>
+  <div class="pal-row" id="brk"></div>
+
+  <div class="pal-head">Special Math</div>
+  <div class="pal-row" id="spec"></div>
+
+  <div class="pal-head">Digits 0–9</div>
+  <div class="pal-row" id="num"></div>
+
+  <div class="pal-head">A – Z</div>
+  <div class="pal-row" id="alph-up"></div>
+
+  <div class="pal-head">a – z</div>
+  <div class="pal-row" id="alph-lo"></div>
+
+  <div class="pal-head">Greek</div>
+  <div class="pal-row" id="grk"></div>
+
+</div><!-- /palette -->
+
+<!-- CANVAS -->
+<div id="canvas-wrap">
+  <canvas id="drawCanvas"></canvas>
+  <div id="canvas"></div>
+</div>
+
+</div><!-- /main -->
+<div id="statusbar">Ready</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  PALETTE GENERATION
+// ══════════════════════════════════════════════════════
+const COLORS=[
+  ['#ffff00','#000'],['#ff2222','#fff'],['#00cc00','#fff'],['#0044ff','#fff'],
+  ['#800080','#fff'],['#00cccc','#000'],['#ff8800','#fff'],['#996600','#fff'],
+  ['#ffcccc','#000'],['#008080','#fff'],['#ff66cc','#000'],['#444','#fff'],
+];
+
+function mkTile(lbl,bg,fg,type,w,h,fs,extra){
+  const d=document.createElement('div');
+  d.className='tile';
+  w=w||42; h=h||42; fs=fs||18;
+  d.style.cssText=`width:${w}px;height:${h}px;background:${bg};color:${fg};font-size:${fs}px`;
+  d.draggable=true;
+  Object.assign(d.dataset,{type:type||'block',label:lbl,bg,fg,w,h,fs,...(extra||{})});
+  d.textContent=lbl;
+  d.addEventListener('dragstart',onPalDrag);
+  return d;
+}
+
+document.getElementById('cp').append(
+  ...COLORS.map(([bg,fg])=>mkTile('',bg,fg,'block',38,38,16))
+);
+
+// Arithmetic ops — bigger
+['+','−','×','÷','·','%','!','^'].forEach(s=>
+  document.getElementById('op').appendChild(mkTile(s,'#fffbe6','#000','block',42,42,20))
+);
+// Relations
+['=','≠','<','>','≤','≥','≈','∝'].forEach(s=>
+  document.getElementById('rel').appendChild(mkTile(s,'#fff4e6','#000','block',42,42,18))
+);
+// Brackets — tall for grouping
+['(',')','{','}','[',']','|','‖'].forEach(s=>
+  document.getElementById('brk').appendChild(mkTile(s,'#e6f0ff','#000','block',38,52,22))
+);
+
+// Special math
+const specEl=document.getElementById('spec');
+// sqrt sizes: small(60), medium(100), large(140)
+[
+  {lbl:'√‾ S',type:'sqrt',bg:'#1a3a1a',fg:'#0f0',w:60,h:52,idx:'',fs:14},
+  {lbl:'√‾ M',type:'sqrt',bg:'#1a3a1a',fg:'#0f0',w:100,h:56,idx:'',fs:14},
+  {lbl:'√‾ L',type:'sqrt',bg:'#1a3a1a',fg:'#0f0',w:150,h:60,idx:'',fs:14},
+  {lbl:'³√ S',type:'sqrt',bg:'#2a1a3a',fg:'#c8f',w:60,h:52,idx:'3',fs:13},
+  {lbl:'³√ M',type:'sqrt',bg:'#2a1a3a',fg:'#c8f',w:100,h:56,idx:'3',fs:13},
+  {lbl:'ⁿ exp',type:'exp',bg:'#3a1a1a',fg:'#ffd',w:44,h:28,fs:12},
+  {lbl:'a/b',type:'frac',bg:'#1a1a4e',fg:'#fff',w:70,h:64,fs:15},
+  {lbl:'log',type:'block',bg:'#1a3a3a',fg:'#aff',w:50,h:40,fs:14},
+  {lbl:'ln',type:'block',bg:'#1a3a3a',fg:'#aff',w:40,h:40,fs:15},
+  {lbl:'lim',type:'block',bg:'#2a2a1a',fg:'#ff8',w:50,h:40,fs:14},
+  {lbl:'sin',type:'block',bg:'#1a2a3a',fg:'#8ff',w:48,h:40,fs:14},
+  {lbl:'cos',type:'block',bg:'#1a2a3a',fg:'#8ff',w:48,h:40,fs:14},
+  {lbl:'tan',type:'block',bg:'#1a2a3a',fg:'#8ff',w:48,h:40,fs:14},
+].forEach(d=>{
+  const t=document.createElement('div');
+  t.className='tile';
+  t.style.cssText=`width:${Math.min(d.w,140)}px;height:${d.h}px;background:${d.bg};color:${d.fg};font-size:${d.fs}px;max-width:148px`;
+  t.draggable=true;
+  Object.assign(t.dataset,{type:d.type,label:d.lbl,bg:d.bg,fg:d.fg,w:d.w,h:d.h,fs:d.fs,idx:d.idx||''});
+  t.textContent=d.lbl;
+  t.addEventListener('dragstart',onPalDrag);
+  specEl.appendChild(t);
+});
+
+// Digits — large
+'0123456789'.split('').forEach(s=>
+  document.getElementById('num').appendChild(mkTile(s,'#fff','#000','block',42,42,20))
+);
+// Uppercase
+'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(s=>
+  document.getElementById('alph-up').appendChild(mkTile(s,'#ffffff','#000','block',40,40,18))
+);
+// Lowercase
+'abcdefghijklmnopqrstuvwxyz'.split('').forEach(s=>
+  document.getElementById('alph-lo').appendChild(mkTile(s,'#f0f0ff','#000','block',40,40,18))
+);
+// Greek
+['α','β','γ','δ','θ','λ','μ','π','σ','φ','ω','Σ','Δ','Ω','∞','∂','∑','∫','∇','ε'].forEach(s=>
+  document.getElementById('grk').appendChild(mkTile(s,'#e8eeff','#000','block',40,40,18))
+);
+
+// Wire static tiles
+document.querySelectorAll('#palette .tile[draggable]').forEach(t=>{if(!t._w){t._w=1;t.addEventListener('dragstart',onPalDrag);}});
+
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+let nodes=[],nid=0,zoom=1,selId=null;
+let palDrag=null;
+let dNodeId=null,dNOX,dNOY,dNSX,dNSY;
+let resId=null,resOX,resOY,resW0,resH0;
+let panning=false,panX,panY,panSX,panSY;
+
+const canvasEl=document.getElementById('canvas');
+const wrap=document.getElementById('canvas-wrap');
+const ghost=document.getElementById('ghost');
+const statusBar=document.getElementById('statusbar');
+
+// ── DRAW ─────────────────────────────────────────────
+let drawMode=false,drawTool='pen',isDrawing=false;
+const dc=document.getElementById('drawCanvas');
+const dctx=dc.getContext('2d');
+
+function resizeDC(){
+  const r=wrap.getBoundingClientRect();
+  const img=dc.toDataURL();
+  dc.width=r.width; dc.height=r.height;
+  const im=new Image(); im.onload=()=>dctx.drawImage(im,0,0); im.src=img;
+}
+window.addEventListener('resize',resizeDC); resizeDC();
+
+function toggleDraw(){
+  drawMode=!drawMode;
+  document.getElementById('draw-toggle').classList.toggle('active',drawMode);
+  document.getElementById('drawtool').classList.toggle('visible',drawMode);
+  dc.classList.toggle('active',drawMode);
+  canvasEl.style.pointerEvents=drawMode?'none':'';
+}
+function setDrawTool(t){
+  drawTool=t;
+  document.getElementById('dt-pen').classList.toggle('active',t==='pen');
+  document.getElementById('dt-erase').classList.toggle('active',t==='erase');
+}
+function clearDrawing(){if(confirm('Clear hand-drawn strokes?'))dctx.clearRect(0,0,dc.width,dc.height);}
+
+dc.addEventListener('mousedown',ev=>{
+  if(!drawMode)return; isDrawing=true;
+  const r=dc.getBoundingClientRect();
+  dctx.beginPath(); dctx.moveTo(ev.clientX-r.left,ev.clientY-r.top);
+});
+dc.addEventListener('mousemove',ev=>{
+  if(!drawMode||!isDrawing)return;
+  const r=dc.getBoundingClientRect();
+  const x=ev.clientX-r.left,y=ev.clientY-r.top;
+  const sz=+document.getElementById('draw-size').value;
+  if(drawTool==='erase'){
+    dctx.clearRect(x-sz*2,y-sz*2,sz*4,sz*4);
+  } else {
+    dctx.strokeStyle=document.getElementById('draw-color').value;
+    dctx.lineWidth=sz; dctx.lineCap='round'; dctx.lineJoin='round';
+    dctx.lineTo(x,y); dctx.stroke(); dctx.beginPath(); dctx.moveTo(x,y);
+  }
+});
+dc.addEventListener('mouseup',()=>{isDrawing=false;});
+dc.addEventListener('mouseleave',()=>{isDrawing=false;});
+
+// ══════════════════════════════════════════════════════
+//  ZOOM
+// ══════════════════════════════════════════════════════
+function setZoom(v){zoom=v;canvasEl.style.transform=`scale(${v})`;}
+wrap.addEventListener('wheel',ev=>{
+  if(drawMode)return;
+  ev.preventDefault();
+  zoom=Math.max(.2,Math.min(3,zoom+(ev.deltaY<0?.1:-.1)));
+  canvasEl.style.transform=`scale(${zoom})`;
+  document.getElementById('zoom-sel').value=[.5,.75,1,1.25,1.5,2].reduce((a,b)=>Math.abs(b-zoom)<Math.abs(a-zoom)?b:a,1);
+},{passive:false});
+
+// ══════════════════════════════════════════════════════
+//  FONT SIZE CONTROL
+// ══════════════════════════════════════════════════════
+function updateFontCtrl(){
+  const nd=getN(selId);
+  const show=nd&&nd.type!=='sqrt'&&nd.type!=='frac';
+  document.getElementById('font-ctrl').classList.toggle('show',!!show);
+  document.getElementById('font-sep').style.display=show?'':'none';
+  if(show) document.getElementById('font-val').textContent=nd.fs||18;
+}
+function adjFont(delta){
+  const nd=getN(selId); if(!nd||nd.type==='sqrt'||nd.type==='frac')return;
+  nd.fs=Math.max(8,Math.min(80,(nd.fs||18)+delta));
+  // find text node or label element
+  const labelEl=nd.el.querySelector('.node-label');
+  if(labelEl) labelEl.style.fontSize=nd.fs+'px';
+  else nd.el.style.fontSize=nd.fs+'px';
+  const badge=nd.el.querySelector('.node-fs');
+  if(badge) badge.textContent=nd.fs+'px';
+  document.getElementById('font-val').textContent=nd.fs;
+}
+
+// ══════════════════════════════════════════════════════
+//  PALETTE DRAG
+// ══════════════════════════════════════════════════════
+function onPalDrag(e){
+  const d=e.currentTarget.dataset;
+  palDrag={type:d.type,label:d.label,bg:d.bg,fg:d.fg,
+           w:+d.w||48,h:+d.h||48,fs:+d.fs||18,idx:d.idx||''};
+  ghost.style.cssText=`display:flex;width:${Math.min(palDrag.w,120)}px;height:${palDrag.h}px;background:${palDrag.bg||'#fff'};color:${palDrag.fg||'#000'};position:fixed;pointer-events:none;z-index:9999;opacity:.8;align-items:center;justify-content:center;font-weight:700;font-size:${palDrag.fs}px;border:2px solid rgba(255,255,255,.6);border-radius:4px;`;
+  ghost.textContent=palDrag.label;
+  e.dataTransfer.setDragImage(new Image(),0,0);
+}
+document.addEventListener('dragover',e=>{
+  e.preventDefault();
+  if(palDrag){ghost.style.left=(e.clientX-palDrag.w/2)+'px';ghost.style.top=(e.clientY-palDrag.h/2)+'px';}
+});
+document.addEventListener('dragend',e=>{
+  ghost.style.display='none';
+  if(!palDrag)return;
+  const r=wrap.getBoundingClientRect();
+  if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){
+    const x=(e.clientX-r.left+wrap.scrollLeft)/zoom-palDrag.w/2;
+    const y=(e.clientY-r.top+wrap.scrollTop)/zoom-palDrag.h/2;
+    createNode({...palDrag},x,y);
+  }
+  palDrag=null;
+});
+
+// ══════════════════════════════════════════════════════
+//  CREATE NODE
+// ══════════════════════════════════════════════════════
+function createNode(data,x,y){
+  const id=++nid;
+  const el=document.createElement('div');
+  el.className='node'; el.id='n'+id;
+  el.style.left=x+'px'; el.style.top=y+'px';
+  el.style.width=data.w+'px'; el.style.height=data.h+'px';
+
+  if(data.type==='frac'){
+    el.classList.add('frac');
+    const num=document.createElement('div'); num.className='frac-num';
+    num.style.fontSize=(data.fs||18)+'px'; num.textContent='a';
+    const bar=document.createElement('div'); bar.className='frac-bar';
+    const den=document.createElement('div'); den.className='frac-den';
+    den.style.fontSize=(data.fs||18)+'px'; den.textContent='b';
+    el.append(num,bar,den);
+    num.addEventListener('dblclick',ev=>{ev.stopPropagation();editEl(num);});
+    den.addEventListener('dblclick',ev=>{ev.stopPropagation();editEl(den);});
+
+  } else if(data.type==='sqrt'){
+    el.classList.add('sqrt-node'); el.style.overflow='visible';
+    const svgEl=makeSqrtSVG(data.w,data.h,data.idx||'');
+    svgEl.className='sqsvg';
+    // radicand text inside
+    const radDiv=document.createElement('div');
+    radDiv.className='node-label';
+    radDiv.style.cssText=`position:absolute;left:${Math.round(data.w*.33)}px;top:${Math.round(data.h*.12)}px;width:${Math.round(data.w*.62)}px;height:${Math.round(data.h*.78)}px;display:flex;align-items:center;justify-content:center;font-size:${data.fs||18}px;font-weight:700;color:#fff;cursor:text;`;
+    radDiv.title='Double-click to edit radicand';
+    radDiv.addEventListener('dblclick',ev=>{ev.stopPropagation();editEl(radDiv);});
+    el.append(svgEl,radDiv);
+
+  } else if(data.type==='exp'){
+    el.classList.add('exp-node');
+    el.style.fontSize=(data.fs||12)+'px';
+    const lbl=document.createElement('span'); lbl.className='node-label';
+    lbl.style.fontSize=(data.fs||12)+'px'; lbl.textContent=data.label||'n';
+    el.appendChild(lbl);
+
+  } else {
+    el.style.background=data.bg||'#fff'; el.style.color=data.fg||'#000';
+    const lbl=document.createElement('span'); lbl.className='node-label';
+    lbl.style.fontSize=(data.fs||18)+'px'; lbl.textContent=data.label||'';
+    el.appendChild(lbl);
+  }
+
+  // font size badge
+  const fsBadge=document.createElement('div'); fsBadge.className='node-fs';
+  fsBadge.textContent=(data.fs||18)+'px'; el.appendChild(fsBadge);
+  // delete btn
+  const del=document.createElement('div'); del.className='node-del'; del.textContent='×';
+  del.addEventListener('mousedown',ev=>{ev.stopPropagation();removeNode(id);});
+  el.appendChild(del);
+  // resize handle
+  const rsz=document.createElement('div'); rsz.className='node-rsz';
+  rsz.addEventListener('mousedown',ev=>{
+    ev.preventDefault();ev.stopPropagation();
+    const nd=getN(id); resId=id; resOX=ev.clientX; resOY=ev.clientY; resW0=nd.w; resH0=nd.h;
+  });
+  el.appendChild(rsz);
+
+  // dblclick to edit
+  el.addEventListener('dblclick',ev=>{
+    if(data.type!=='frac'&&data.type!=='sqrt'){
+      ev.stopPropagation();
+      const lbl=el.querySelector('.node-label');
+      if(lbl) editEl(lbl); else editNodeLabel(id,el);
+    }
+  });
+  el.addEventListener('contextmenu',ev=>{ev.preventDefault();showCtx(ev,id);});
+  el.addEventListener('mousedown',ev=>{
+    if(drawMode)return;
+    if(ev.button!==0)return;
+    if(ev.target.classList.contains('node-del')||ev.target.classList.contains('node-rsz'))return;
+    ev.preventDefault();ev.stopPropagation();
+    select(id);
+    const nd=getN(id); dNodeId=id; dNOX=ev.clientX; dNOY=ev.clientY; dNSX=nd.x; dNSY=nd.y;
+  });
+
+  canvasEl.appendChild(el);
+  const nd={id,type:data.type,x,y,w:data.w,h:data.h,fs:data.fs||18,el,
+            label:data.label,bg:data.bg,fg:data.fg,idx:data.idx||''};
+  nodes.push(nd); select(id); return nd;
+}
+
+// ══════════════════════════════════════════════════════
+//  SQRT SVG
+// ══════════════════════════════════════════════════════
+function makeSqrtSVG(w,h,idx){
+  const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  s.setAttribute('width',w); s.setAttribute('height',h);
+  s.setAttribute('viewBox',`0 0 ${w} ${h}`); s.style.overflow='visible';
+  const notchX=w*.22, topY=h*.15, tickY=h*.65;
+  const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.setAttribute('d',`M4,${tickY} L${notchX*.5},${h-5} L${notchX},${topY} L${w-4},${topY}`);
+  p.setAttribute('stroke','#fff'); p.setAttribute('stroke-width','3');
+  p.setAttribute('fill','none'); p.setAttribute('stroke-linejoin','round');
+  s.appendChild(p);
+  if(idx&&idx!=='2'){
+    const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',notchX*.15); t.setAttribute('y',topY+1);
+    t.setAttribute('font-size','11'); t.setAttribute('font-weight','bold'); t.setAttribute('fill','#fff');
+    t.textContent=idx; s.appendChild(t);
+  }
+  return s;
+}
+function refreshSqrt(id){
+  const nd=getN(id); if(!nd||nd.type!=='sqrt')return;
+  const old=nd.el.querySelector('svg.sqsvg'); if(old)old.remove();
+  const s=makeSqrtSVG(nd.w,nd.h,nd.idx); s.className='sqsvg';
+  nd.el.insertBefore(s,nd.el.firstChild);
+  const rad=nd.el.querySelector('.node-label');
+  if(rad){
+    rad.style.left=Math.round(nd.w*.33)+'px';
+    rad.style.top=Math.round(nd.h*.12)+'px';
+    rad.style.width=Math.round(nd.w*.62)+'px';
+    rad.style.height=Math.round(nd.h*.78)+'px';
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  INLINE EDIT
+// ══════════════════════════════════════════════════════
+function editEl(el){
+  const orig=el.textContent;
+  const inp=document.createElement('input'); inp.value=orig;
+  inp.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:none;background:rgba(255,255,200,.95);color:#000;font-weight:700;font-size:15px;text-align:center;border-radius:3px;z-index:30;';
+  el.style.position='relative'; el.appendChild(inp); inp.focus(); inp.select();
+  const done=()=>{el.removeChild(inp);el.textContent=inp.value;};
+  inp.addEventListener('blur',done);
+  inp.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key==='Escape')inp.blur();});
+}
+function editNodeLabel(id,el){
+  const nd=getN(id);
+  const inp=document.createElement('input'); inp.value=nd.label||'';
+  inp.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:none;background:rgba(255,255,200,.95);color:#000;font-weight:700;font-size:15px;text-align:center;border-radius:3px;z-index:30;';
+  el.appendChild(inp); inp.focus(); inp.select();
+  const done=()=>{
+    nd.label=inp.value; el.removeChild(inp);
+    const lbl=el.querySelector('.node-label'); if(lbl)lbl.textContent=nd.label;
+  };
+  inp.addEventListener('blur',done);
+  inp.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key==='Escape')inp.blur();});
+}
+
+// ══════════════════════════════════════════════════════
+//  MOUSE: MOVE / RESIZE
+// ══════════════════════════════════════════════════════
+document.addEventListener('mousemove',ev=>{
+  if(resId!==null){
+    const nd=getN(resId);
+    nd.w=Math.max(20,resW0+(ev.clientX-resOX)/zoom);
+    nd.h=Math.max(20,resH0+(ev.clientY-resOY)/zoom);
+    nd.el.style.width=nd.w+'px'; nd.el.style.height=nd.h+'px';
+    if(nd.type==='sqrt')refreshSqrt(resId);
+  }
+  if(dNodeId!==null){
+    const nd=getN(dNodeId);
+    let nx=dNSX+(ev.clientX-dNOX)/zoom, ny=dNSY+(ev.clientY-dNOY)/zoom;
+    const sm=document.getElementById('snap-sel').value;
+    if(sm==='grid'){nx=Math.round(nx/20)*20;ny=Math.round(ny/20)*20;}
+    else if(sm==='magnetic'){[nx,ny]=magSnap(nx,ny,nd.w,nd.h,dNodeId);}
+    nd.x=nx;nd.y=ny;nd.el.style.left=nx+'px';nd.el.style.top=ny+'px';
+  }
+  if(panning&&!drawMode){
+    wrap.scrollLeft=panX-(ev.clientX-panSX);
+    wrap.scrollTop=panY-(ev.clientY-panSY);
+  }
+});
+document.addEventListener('mouseup',()=>{
+  resId=null;dNodeId=null;panning=false;wrap.style.cursor='';
+  document.querySelectorAll('.snap-hi').forEach(e=>e.classList.remove('snap-hi'));
+});
+
+// ══════════════════════════════════════════════════════
+//  MAGNETIC SNAP
+// ══════════════════════════════════════════════════════
+const SNAPD=22;
+function magSnap(nx,ny,w,h,sid){
+  let bx=nx,by=ny,bdx=SNAPD+1,bdy=SNAPD+1;
+  document.querySelectorAll('.snap-hi').forEach(e=>e.classList.remove('snap-hi'));
+  for(const nd of nodes){
+    if(nd.id===sid)continue;
+    [nd.x+nd.w+2,nd.x-w-2,nd.x,nd.x+nd.w-w].forEach(cx=>{const dx=Math.abs(nx-cx);if(dx<bdx){bdx=dx;bx=cx;}});
+    [nd.y+nd.h+2,nd.y-h-2,nd.y,nd.y+nd.h-h].forEach(cy=>{const dy=Math.abs(ny-cy);if(dy<bdy){bdy=dy;by=cy;}});
+    if(bdx<=SNAPD||bdy<=SNAPD)nd.el.classList.add('snap-hi');
+  }
+  return[bdx<=SNAPD?bx:nx,bdy<=SNAPD?by:ny];
+}
+
+// ══════════════════════════════════════════════════════
+//  PAN
+// ══════════════════════════════════════════════════════
+wrap.addEventListener('mousedown',ev=>{
+  if(drawMode)return;
+  if(ev.target===wrap||ev.target===canvasEl){
+    panning=true;panX=wrap.scrollLeft;panY=wrap.scrollTop;panSX=ev.clientX;panSY=ev.clientY;
+    wrap.style.cursor='grabbing';deselect();
+  }
+});
+
+// ══════════════════════════════════════════════════════
+//  SELECTION
+// ══════════════════════════════════════════════════════
+function select(id){
+  deselect(); selId=id;
+  const nd=getN(id); if(nd)nd.el.classList.add('selected');
+  document.getElementById('del-btn').style.display='';
+  updateFontCtrl();
+}
+function deselect(){
+  if(selId!==null){const nd=getN(selId);if(nd)nd.el.classList.remove('selected');}
+  selId=null;
+  document.getElementById('del-btn').style.display='none';
+  updateFontCtrl();
+}
+function deleteSelected(){if(selId!==null)removeNode(selId);}
+function removeNode(id){
+  const nd=getN(id);if(!nd)return;
+  canvasEl.removeChild(nd.el);nodes=nodes.filter(n=>n.id!==id);
+  if(selId===id)deselect();
+}
+function getN(id){return nodes.find(n=>n.id===id);}
+
+// ══════════════════════════════════════════════════════
+//  CONTEXT MENU
+// ══════════════════════════════════════════════════════
+const ctx=document.getElementById('ctx');
+function showCtx(ev,id){
+  const nd=getN(id); ctx.innerHTML='';
+  const head=document.createElement('div'); head.className='ctx-head'; head.textContent='Node #'+id; ctx.appendChild(head);
+  const hr0=document.createElement('hr'); ctx.appendChild(hr0);
+  const ci=(lbl,fn)=>{const d=document.createElement('div');d.className='ci';d.textContent=lbl;d.onclick=()=>{hideCtx();fn();};ctx.appendChild(d);};
+  ci('✏️ Edit label',()=>{const lbl=nd.el.querySelector('.node-label');if(lbl)editEl(lbl);else editNodeLabel(id,nd.el);});
+  ci('🔡 Font size…',()=>{const v=prompt('Font size (px):',nd.fs||18);if(v&&+v>0){nd.fs=+v;const lbl=nd.el.querySelector('.node-label');if(lbl)lbl.style.fontSize=nd.fs+'px';else nd.el.style.fontSize=nd.fs+'px';const b=nd.el.querySelector('.node-fs');if(b)b.textContent=nd.fs+'px';if(selId===id)document.getElementById('font-val').textContent=nd.fs;}});
+  ci('🎨 Change color…',()=>{const c=prompt('Hex color:',nd.bg||'#fff');if(c){nd.bg=c;nd.el.style.background=c;}});
+  ci('📐 Resize (WxH)…',()=>{const v=prompt('Width x Height:',`${Math.round(nd.w)}x${Math.round(nd.h)}`);if(!v)return;const[w,h]=v.split('x').map(Number);if(w>0&&h>0){nd.w=w;nd.h=h;nd.el.style.width=w+'px';nd.el.style.height=h+'px';if(nd.type==='sqrt')refreshSqrt(id);}});
+  if(nd.type==='sqrt'){ci('∛ Set root index…',()=>{const v=prompt('Index (blank=square, 3=cube, n=nth):',nd.idx);if(v===null)return;nd.idx=v;refreshSqrt(id);});}
+  const hr1=document.createElement('hr'); ctx.appendChild(hr1);
+  ci('🗑 Delete',()=>removeNode(id));
+  ctx.style.cssText=`display:block;left:${Math.min(ev.clientX,window.innerWidth-180)}px;top:${Math.min(ev.clientY,window.innerHeight-250)}px;position:fixed;`;
+}
+function hideCtx(){ctx.style.display='none';}
+document.addEventListener('click',hideCtx);
+
+// ══════════════════════════════════════════════════════
+//  KEYBOARD
+// ══════════════════════════════════════════════════════
+document.addEventListener('keydown',ev=>{
+  if(ev.target.tagName==='INPUT')return;
+  if(ev.key==='d'||ev.key==='D'){toggleDraw();return;}
+  if(ev.key==='e'||ev.key==='E'){if(drawMode)setDrawTool(drawTool==='erase'?'pen':'erase');return;}
+  if((ev.key==='Delete'||ev.key==='Backspace')&&selId!==null&&!drawMode){deleteSelected();return;}
+  if(ev.key==='Escape')deselect();
+  // Font size shortcuts
+  if(selId!==null&&ev.ctrlKey&&ev.key===']'){ev.preventDefault();adjFont(2);}
+  if(selId!==null&&ev.ctrlKey&&ev.key==='['){ev.preventDefault();adjFont(-2);}
+  // Arrow nudge
+  if(selId!==null&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(ev.key)){
+    ev.preventDefault();
+    const nd=getN(selId),d=ev.shiftKey?10:2;
+    if(ev.key==='ArrowLeft')nd.x-=d;if(ev.key==='ArrowRight')nd.x+=d;
+    if(ev.key==='ArrowUp')nd.y-=d;if(ev.key==='ArrowDown')nd.y+=d;
+    nd.el.style.left=nd.x+'px';nd.el.style.top=nd.y+'px';
+  }
+});
+
+// ══════════════════════════════════════════════════════
+//  SAVE PNG
+// ══════════════════════════════════════════════════════
+function savePNG(){
+  // Use dom-to-canvas approach via foreignObject SVG
+  const r=wrap.getBoundingClientRect();
+  const W=Math.round(r.width),H=Math.round(r.height);
+  const serializer=new XMLSerializer();
+  const wrapClone=document.getElementById('canvas-wrap').cloneNode(true);
+  wrapClone.style.width=W+'px'; wrapClone.style.height=H+'px';
+  // remove interactive elements from clone
+  wrapClone.querySelectorAll('.node-del,.node-rsz,.node-fs').forEach(e=>e.remove());
+  // strip canvas element (we overlay it separately)
+  const dcClone=wrapClone.querySelector('#drawCanvas'); if(dcClone)dcClone.remove();
+
+  const svgStr=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
+    <foreignObject width="${W}" height="${H}">
+      <html xmlns="http://www.w3.org/1999/xhtml"><body style="margin:0;background:#0e0e1e;">${wrapClone.outerHTML}</body></html>
+    </foreignObject></svg>`;
+  const img=new Image();
+  img.onload=()=>{
+    const out=document.createElement('canvas'); out.width=W; out.height=H;
+    const c=out.getContext('2d');
+    c.fillStyle='#0e0e1e'; c.fillRect(0,0,W,H);
+    c.drawImage(img,0,0);
+    c.drawImage(dc,0,0,W,H); // overlay hand-drawing
+    const a=document.createElement('a'); a.download='math-puzzle.png';
+    a.href=out.toDataURL('image/png'); a.click();
+  };
+  img.onerror=()=>alert('PNG export: browser security may block this. Try Print/PDF instead.');
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svgStr);
+}
+
+// ══════════════════════════════════════════════════════
+//  CLEAR
+// ══════════════════════════════════════════════════════
+function clearAll(){
+  if(!confirm('Clear all blocks AND hand-drawing?'))return;
+  nodes.forEach(n=>canvasEl.removeChild(n.el)); nodes=[];deselect();
+  dctx.clearRect(0,0,dc.width,dc.height);
+}
+
+// ══════════════════════════════════════════════════════
+//  STATUS
+// ══════════════════════════════════════════════════════
+setInterval(()=>{
+  statusBar.textContent=`Blocks: ${nodes.length}  |  Zoom: ${Math.round(zoom*100)}%  |  Mode: ${drawMode?'✏️ DRAW':'🖱 BLOCK'}  |  Selected: ${selId?'#'+selId+(getN(selId)?' fs='+(getN(selId).fs||18)+'px':''):'none'}  |  Ctrl+]/[ = font size  |  Arrow keys = nudge  |  D=draw  E=erase`;
+},700);
+</script>
+</body>
+</html>
