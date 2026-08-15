@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Make Math Fun Again — Post 2: Just 123 and Deductive Thinking | Dr. UVC Math</title>
-<meta name="description" content="Just 123, properly introduced: fifty puzzles a volume built from only the digits 1, 2 and 3, and how they train a child to deduce instead of guess. Free six-puzzle sampler.">
+<title>Make Math Fun Again — Post 3: Deduce Me! | Dr. UVC Math</title>
+<meta name="description" content="Twenty-five square-number riddles you can solve on a walk, and why a riddle teaches faster than a drill. Every answer in Deduce Me! comes with The Secret.">
 <meta name="robots" content="noai, noimageai">
 <style>
 :root{
@@ -109,9 +109,9 @@ footer a{color:var(--yellow);text-decoration:none}
 
 <div class="hero">
 <div class="wrap"><div class="col">
-<p class="eyebrow">Make Math Fun Again &middot; Post 2 of 7</p>
-<h1>Teach a child to prove it, not guess it.</h1>
-<p><i>Just 123</i> has been finished and sitting quietly in the store. This is its first proper introduction &mdash; what is inside it, and what it actually trains.</p>
+<p class="eyebrow">Make Math Fun Again &middot; Post 3 of 7</p>
+<h1>A riddle teaches faster than a drill.</h1>
+<p>Twenty-five square-number riddles you can solve on a walk, with no paper and no calculator &mdash; and why every answer in the book comes with <i>The Secret</i>.</p>
 </div></div>
 </div>
 
@@ -119,85 +119,83 @@ footer a{color:var(--yellow);text-decoration:none}
 
 <section>
 <p class="kicker">The format</p>
-<h2>What one puzzle looks like</h2>
+<h2>What a riddle looks like</h2>
 <hr class="rule">
 <div class="col">
-<p>Every puzzle in both books is built from only the digits <b>1</b>, <b>2</b> and <b>3</b>. No other number appears anywhere &mdash; not in the questions, not in the answers. That single constraint is what makes the books work, and it is why a calculator is no help at all.</p>
+<p>A drill says <i>compute this</i>. A riddle says <i>find the number that fits</i>. The second one is harder to fake and far more fun, because the solver has to hold several conditions at once and let them narrow the field. Here are three from the book, easy to hard.</p>
 </div>
 
 <div class="card">
-<span class="badge">Junior &middot; One move</span>
-<p class="line q">12 &minus; 3 = 11</p>
-<p class="note how">The equation is false. Swap any two digits &mdash; one move, nothing added, nothing erased &mdash; and make it true.</p>
-<button class="reveal" type="button" data-target="a1" aria-expanded="false" aria-controls="a1">Show the fix</button>
+<span class="badge">Riddle &middot; Level 1</span>
+<p class="line q">I am a two-digit square. My root is the sum of my own digits.</p>
+<p class="note how">No calculator. There are only six two-digit squares &mdash; that is the whole search space.</p>
+<button class="reveal" type="button" data-target="a1" aria-expanded="false" aria-controls="a1">Show the answer</button>
 <div class="answer" id="a1" hidden>
-<p class="line a">13 &minus; 2 = 11</p>
-<p class="note">Trade the 2 and the 3. It is the <b>only</b> swap on the card that works &mdash; and that word <i>only</i> is the whole point of the book.</p>
+<p class="line a">81</p>
+<p class="note"><b>The Secret:</b> &radic;81 = 9, and 8 + 1 = 9. Of all six two-digit squares it is the only one that builds its own root out of its own digits &mdash; 16 gives 7 but has root 4, 64 gives 10 but has root 8. A child can check all six on their fingers and <i>prove</i> the answer is unique.</p>
 </div>
 </div>
 
 <div class="card">
-<span class="badge">Senior &middot; Fill in the blanks</span>
-<p class="line q">&#9723;&sup3; = 1331</p>
-<p class="note how">Each blank holds a number built from 1, 2 and 3. No calculator, and no trial and error needed.</p>
+<span class="badge">Riddle &middot; Level 4</span>
+<p class="line q">I am a three-digit square. Every one of my digits is prime, and my root is a semiprime.</p>
+<p class="note how">Prime digits are 2, 3, 5 and 7. A semiprime is a product of exactly two primes.</p>
 <button class="reveal" type="button" data-target="a2" aria-expanded="false" aria-controls="a2">Show the answer</button>
 <div class="answer" id="a2" hidden>
-<p class="line a">11&sup3; = 1331</p>
-<p class="note">A cube ending in 1 must have a root ending in 1, and 1331 is far too small for 21. The answer is settled before any cubing happens.</p>
+<p class="line a">225</p>
+<p class="note"><b>The Secret:</b> a square whose digits are all prime must end in 5. Squares end in 0, 1, 4, 5, 6 or 9 &mdash; and of those only 5 is prime. That one observation collapses the search instantly, and 225 is the only three-digit number that survives it. Its root is 15 = 3 &times; 5, and both of those are prime digits too.</p>
+</div>
+</div>
+
+<div class="card">
+<span class="badge">Riddle &middot; Level 5</span>
+<p class="line q">I am a two-digit number. Square me, and I am still standing at the end.</p>
+<p class="note how">Read it literally. The answer is hiding in its own square.</p>
+<button class="reveal" type="button" data-target="a3" aria-expanded="false" aria-controls="a3">Show the answer</button>
+<div class="answer" id="a3" hidden>
+<p class="line a">25 &rarr; 25&sup2; = 6<b>25</b></p>
+<p class="note"><b>The Secret:</b> numbers that reappear at the end of their own square are called <i>automorphic</i>, and they come in a chain that grows one digit at a time &mdash; 25, 625, 90625 on one branch, 76, 376, 9376 on the other. Once a child sees the first one, the rest are a hunt they can run for years.</p>
 </div>
 </div>
 </section>
 
 <section>
 <p class="kicker">The point</p>
-<h2>What it trains: deduction</h2>
+<h2>Why a riddle beats a drill</h2>
 <hr class="rule">
-<div class="col">
-<p>Most arithmetic practice rewards one thing &mdash; getting the number out fast. That skill has been fully automated. What has not been automated is looking at a statement and working out what <i>must</i> be true about it. That is deduction, and it is what these two books drill, one card at a time.</p>
-</div>
-
-<div class="card">
-<span class="badge">How a child actually solves it</span>
-<p class="line q">12 &minus; 3 = 11</p>
-<p class="note how">Watch the reasoning, not the arithmetic.</p>
-<button class="reveal" type="button" data-target="a3" aria-expanded="false" aria-controls="a3">Show the chain</button>
-<div class="answer" id="a3" hidden>
-<p class="note" style="color:#1C1C2E;margin-bottom:10px">&ldquo;The right side is 11, so it cannot move &mdash; it has no other digit to trade with that keeps it small. So the fix is on the left. Twelve minus three is nine; I need eleven, so the left side has to grow by two. Swapping the 1 and the 2 gives 21 &minus; 3, far too big. Swapping the 2 and the 3 gives 13 &minus; 2 &mdash; eleven. Done, and nothing else could have worked.&rdquo;</p>
-<p class="line a">13 &minus; 2 = 11</p>
-<p class="note">Three or four sentences of pure elimination, and one subtraction at the very end. That ratio is the design.</p>
-</div>
-</div>
-
 <ul class="creed">
-<li><b>Elimination comes before arithmetic.</b> With only three digits and one legal move, a child can hold every possibility in their head at once. The search is small enough to reason about instead of grinding through &mdash; which is exactly when reasoning starts to feel easier than guessing.</li>
-<li><b>Uniqueness forces a reason.</b> Each Junior card has exactly one swap that works. A child who lands it by luck still has to explain why the others fail, and that explanation is the actual lesson. &ldquo;It works&rdquo; becomes &ldquo;it must work, and nothing else can.&rdquo;</li>
-<li><b>Structure beats speed.</b> The Senior puzzles are settled by shape &mdash; last digits, size, whether a number can possibly be a square or a cube &mdash; long before anything is computed. This is the first taste of the idea that you can know an answer without calculating it.</li>
-<li><b>It transfers.</b> Ruling out three wrong options on a test, finding the one line that broke the program, working out who could not have done it in a story &mdash; same move. Deduction is one skill wearing different clothes, and this is a low-stakes place to practise it.</li>
+<li><b>A drill asks you to produce. A riddle asks you to recognise.</b> Producing an answer is a procedure &mdash; and procedures are exactly what machines took over. Recognising which number could possibly fit is judgement, and it stays valuable.</li>
+<li><b>The constraints do the teaching.</b> "All digits prime" and "root is a semiprime" are not decoration. Each clause deletes a swathe of numbers, and the child feels the field shrink as they read. That feeling is what mathematicians call narrowing, and nothing in a worksheet produces it.</li>
+<li><b>It survives being wrong.</b> A drill marks you wrong and moves on. A riddle lets you test a candidate, watch it fail one clause, and adjust &mdash; which is the actual loop of doing mathematics.</li>
+<li><b>It travels.</b> No paper, no screen, no calculator. These were composed on foot and they are meant to be solved the same way &mdash; in a car, on a walk, waiting for the bus. That is why the series is called Walk Math.</li>
 </ul>
 </section>
 
 <section>
-<p class="kicker">The way in</p>
-<h2>Start with the free sampler</h2>
+<p class="kicker">The part I care most about</p>
+<h2>Every answer comes with The Secret</h2>
 <hr class="rule">
 <div class="col">
-<p>Six puzzles &mdash; three from each book &mdash; with the full answer key and the method shown. It costs nothing, it prints on plain paper, and it takes about ten minutes at a kitchen table. If a child leans in, the books will land. If they do not, you have lost nothing.</p>
-<p>Teachers: the same sampler is posted as a free resource on my Teachers Pay Teachers store, alongside both full books with terms of use and answer keys included.</p>
-</div>
-<div class="cta-row">
-<a class="btn dark" href="just123.html">Download the free sampler &rarr;</a>
-<a class="btn" href="lessons.html">Play the free lessons</a>
+<p>An answer key that only prints the answer teaches nothing. It settles an argument and closes the page.</p>
+<p>So in this book every solution carries a short paragraph called <b>The Secret</b> &mdash; the one structural fact that made the riddle solvable, written so a child can carry it to the next problem. <i>A square whose digits are all prime must end in 5.</i> <i>A cube ending in 1 must have a root ending in 1.</i> <i>Only one two-digit square makes its own root.</i></p>
+<p>Twenty-five riddles, twenty-five secrets. The riddles are the bait; the secrets are the book.</p>
 </div>
 </section>
 
 <section>
-<p class="kicker">The books</p>
-<h2>Two editions, two ways in</h2>
+<p class="kicker">In the store</p>
+<h2>Deduce Me! &mdash; Walk Math, Book 1</h2>
 <hr class="rule">
 <div class="col">
-<p><b>Junior</b> hands you a false equation and one move to repair it &mdash; a gentle warm-up in seeing structure. <b>Senior</b> withholds pieces and lets structure tell you what belongs there, ramping from &ldquo;2 + 1 = &#9723;&rdquo; up to a hard set built on squares and cubes. Fifty puzzles each, every solution verified, answer keys included.</p>
+<p>Twenty-five square-number riddles in five ascending levels, every answer verified, every answer followed by its Secret. Ages 8+. Instant PDF download, and it prints cleanly for a classroom.</p>
 </div>
 <div class="products">
+<div class="prod">
+<span class="badge">Walk Math &middot; Book 1</span>
+<h3>Deduce Me! 25 Square-Number Riddles</h3>
+<p>Five levels, answers included, and every answer comes with The Secret. Ages 8+. PDF.</p>
+<div class="foot"><span class="price">$1.99</span><a class="btn" href="deduceme.html">View &rarr;</a></div>
+</div>
 <div class="prod">
 <span class="badge">Puzzle book</span>
 <h3>Just 123 Junior &mdash; One Move</h3>
@@ -205,21 +203,15 @@ footer a{color:var(--yellow);text-decoration:none}
 <div class="foot"><span class="price">$4.99</span><a class="btn" href="just123.html">View &rarr;</a></div>
 </div>
 <div class="prod">
-<span class="badge">Puzzle book</span>
-<h3>Just 123 Senior &mdash; Fill in the Blanks &amp; Powers</h3>
-<p>Fifty puzzles ramping into squares and cubes. Ages 10+ (Grades 5+). PDF.</p>
-<div class="foot"><span class="price">$6.99</span><a class="btn" href="just123.html">View &rarr;</a></div>
-</div>
-<div class="prod">
-<span class="badge">Bundle</span>
-<h3>Just 123 Bundle &mdash; Both Books</h3>
-<p>One brainy household, two levels. Save $1.99.</p>
-<div class="foot"><span class="price">$9.99</span><a class="btn" href="just123.html">View &rarr;</a></div>
+<span class="badge">Free</span>
+<h3>Just 123 Sampler</h3>
+<p>Six puzzles, three from each edition, full answer key. Costs nothing.</p>
+<div class="foot"><span class="price">$0</span><a class="btn" href="Just123_Free_Sampler.pdf">Download &rarr;</a></div>
 </div>
 </div>
 <div class="cta-row">
-<a class="btn dark" href="store.html">Go to the store</a>
-<a class="btn" href="just123.html">See both books &rarr;</a>
+<a class="btn dark" href="deduceme.html">Get Deduce Me! &mdash; $1.99</a>
+<a class="btn" href="store.html">See the whole store</a>
 </div>
 </section>
 
@@ -229,22 +221,22 @@ footer a{color:var(--yellow);text-decoration:none}
 <hr class="rule">
 <div class="col"><p>Seven posts, one idea each &mdash; the books, the method behind them, and the road they were written on.</p></div>
 <ol class="series">
-<li><span><b>Make Math Fun Again</b> &mdash; and <i>Just 123</i>, where three digits are enough.</span></li>
-<li class="now"><span><b>Just 123, properly introduced</b> &mdash; what is in it, and how it builds deductive thinking. <i>(you are here)</i></span></li>
-<li><span><b><a href="mmfa-03-deduce-me.html">Deduce Me!</a></b> &mdash; twenty-five square-number riddles, and why a riddle teaches faster than a drill.</span></li>
+<li><span><b><a href="mmfa-01-just123.html">Make Math Fun Again</a></b> &mdash; and <i>Just 123</i>, where three digits are enough.</span></li>
+<li><span><b><a href="mmfa-02-just123-deduction.html">Just 123, properly introduced</a></b> &mdash; what is in it, and how it builds deductive thinking.</span></li>
+<li class="now"><span><b>Deduce Me!</b> &mdash; twenty-five square-number riddles, and why a riddle teaches faster than a drill. <i>(you are here)</i></span></li>
 <li><span><b>Math on the walk</b> &mdash; mailboxes, speed-limit signs and garage doors as problem surfaces.</span></li>
 <li><span><b>One move, or two</b> &mdash; the move family explained, and how to compose your own.</span></li>
 <li><span><b>Puzzles that need no reading</b> &mdash; colour and shape as a way into arithmetic before literacy.</span></li>
 <li><span><b>Life in my Math County</b> &mdash; the whole map, and where each book sits on it.</span></li>
 </ol>
-<div class="col"><p style="margin-top:24px">Take the sampler, try it on a child, and tell me where they got stuck. That is the most useful thing anyone sends me.</p></div>
+<div class="col"><p style="margin-top:24px">Solve one of the three above on your next walk, and tell me which Secret you would have written differently. I read every one of those.</p></div>
 </section>
 
 </main>
 
 <footer>
 <div class="wrap">
-<p>Dr. UVC Math&trade; &middot; Make Math Fun Again&trade; &middot; <a href="store.html">Store</a> &middot; <a href="just123.html">Just 123</a> &middot; <a href="lessons.html">Free Lessons</a><br>
+<p>Dr. UVC Math&trade; &middot; Make Math Fun Again&trade; &middot; <a href="store.html">Store</a> &middot; <a href="deduceme.html">Deduce Me!</a> &middot; <a href="lessons.html">Free Lessons</a><br>
 &copy; 2026 DR UVC LLC. All rights reserved.</p>
 </div>
 </footer>
