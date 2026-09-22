@@ -1,2 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /ty-
+
+Sitemap: https://druvcmath.com/sitemap.xml
