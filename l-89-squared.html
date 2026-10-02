@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Vinculum — Step by Step</title>
+<title>89 Squared — Step by Step</title>
 <style>
   :root{
     --cream:#FAF6E0; --parch:#F4ECCD; --parch2:#EDE3C2;
@@ -134,6 +134,35 @@
   label.tog{ color:#caa86a; font-size:12.5px; display:flex; align-items:center; gap:6px; font-family:Georgia,serif; }
   .hintbar{ color:#8a7350; font-size:11px; font-family:Georgia,serif; text-align:center; max-width:560px; min-height:1.2em; }
 </style>
+<style id="rich-bold">
+/* Rich & bold restyle — Dr. UVC Math, Oct 2026 */
+:root{
+  --teal:#00695C; --amber:#8B5E00; --ink:#1A140C; --ink-soft:#3A2F20;
+  --series:#0D47A1; --green:#1B7F35; --orange:#D84315; --expr:#1B7F35;
+  --tan-deep:#B8860B; --brandgold:#8B5E00;
+}
+body{ font-family:"Palatino Linotype","Book Antiqua",Palatino,"TeX Gyre Pagella",Georgia,serif; }
+.plate{ border:2px solid #B8860B !important; }
+.frame{ border:2px solid #C9A227 !important; opacity:.9 !important; }
+.brand{ color:#8B5E00 !important; font-weight:700 !important; }
+.subtitle{ color:#0D47A1 !important; font-weight:800 !important; }
+.eyebrow{ color:#8B5E00 !important; font-weight:700 !important; }
+.dig{ font-weight:700; }
+.vbar{ height:6px !important; }
+.bd{ border-top:4px solid var(--orange) !important; }
+.caption .bd{ border-top-width:2.5px !important; }
+.val,.lab,.result,.recap,.ladder,.eqs,.midrow,.lrow{ font-weight:700; }
+.recap2,.lrow .hint,.hint2{ font-weight:700; color:#3A2F20 !important; }
+.caption{ font-style:normal !important; font-weight:700 !important; color:#1A140C !important; line-height:1.45 !important; }
+.borrowlab{ font-weight:700 !important; color:#8B5E00 !important; }
+.arrow path{ stroke-width:3.2 !important; }
+.pdot{ opacity:.8 !important; } .pdot.on{ background:#C9A227 !important; }
+button{ font-weight:700; }
+.step,label.tog,label.loop{ color:#E7C66A !important; font-weight:700; }
+.hintbar{ color:#C9A86A !important; }
+/* fix: highlighted digits (.hl + .r) were never fading in */
+.stage.play .hl.r{ animation:rise .6s ease-out both var(--d,0s), hlin .55s ease both var(--d,0s); }
+</style>
 </head>
 <body>
   <div class="stagewrap">
@@ -233,7 +262,7 @@ const SCENES=[
         <span class="pill r" style="--d:2.4s">(&minus;1)&sup2; = <b>1</b></span>
       </div>
       <div class="midrow" style="margin-top:12px"><span class="r" style="--d:2.9s">81 | <span style="color:var(--orange)">&minus;18</span> | 1 &rarr; <b>7921</b></span></div>`,
-    cap:"Near ninety, write 89 as 9 1&#773;. Now the middle term is just &minus;18, not 144 &mdash; almost nothing to carry. &rarr; 7921.",
+    cap:"Near ninety, write 89 as 9 <span class='bd'>1</span>. Now the middle term is just &minus;18, not 144 &mdash; almost nothing to carry. &rarr; 7921.",
     dur:7000 },
 
   { eye:"Base one hundred",

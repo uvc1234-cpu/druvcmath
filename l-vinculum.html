@@ -120,6 +120,33 @@
   label.tog{ color:#caa86a; font-size:12.5px; display:flex; align-items:center; gap:6px; font-family:Georgia,serif; }
   .hintbar{ color:#8a7350; font-size:11px; font-family:Georgia,serif; text-align:center; max-width:560px; min-height:1.2em; }
 </style>
+<style id="rich-bold">
+/* Rich & bold restyle — Dr. UVC Math, Oct 2026 */
+:root{
+  --teal:#00695C; --amber:#8B5E00; --ink:#1A140C; --ink-soft:#3A2F20;
+  --series:#0D47A1; --green:#1B7F35; --orange:#D84315; --expr:#1B7F35;
+  --tan-deep:#B8860B; --brandgold:#8B5E00;
+}
+body{ font-family:"Palatino Linotype","Book Antiqua",Palatino,"TeX Gyre Pagella",Georgia,serif; }
+.plate{ border:2px solid #B8860B !important; }
+.frame{ border:2px solid #C9A227 !important; opacity:.9 !important; }
+.brand{ color:#8B5E00 !important; font-weight:700 !important; }
+.subtitle{ color:#0D47A1 !important; font-weight:800 !important; }
+.eyebrow{ color:#8B5E00 !important; font-weight:700 !important; }
+.dig{ font-weight:700; }
+.vbar{ height:6px !important; }
+.bd{ border-top:4px solid var(--orange) !important; }
+.caption .bd{ border-top-width:2.5px !important; }
+.val,.lab,.result,.recap,.ladder,.eqs,.midrow,.lrow{ font-weight:700; }
+.recap2,.lrow .hint,.hint2{ font-weight:700; color:#3A2F20 !important; }
+.caption{ font-style:normal !important; font-weight:700 !important; color:#1A140C !important; line-height:1.45 !important; }
+.borrowlab{ font-weight:700 !important; color:#8B5E00 !important; }
+.arrow path{ stroke-width:3.2 !important; }
+.pdot{ opacity:.8 !important; } .pdot.on{ background:#C9A227 !important; }
+button{ font-weight:700; }
+.step,label.tog,label.loop{ color:#E7C66A !important; font-weight:700; }
+.hintbar{ color:#C9A86A !important; }
+</style>
 </head>
 <body>
   <div class="stagewrap">
@@ -199,26 +226,26 @@ const SCENES=[
         <div class="col">${B(2,'.9s','o').replace('class="dig o"','class="dig o r" style="--d:.5s"')}<span class="val o r" style="--d:1.3s">&minus;2</span></div>
       </div>
       <div class="result"><span class="r" style="--d:1.85s">10 &minus; 2 = </span><span class="ans pop" style="--d:2.15s">8</span></div>`,
-    cap:"Read it place by place: ten, minus two. So <b>1 2&#773;</b> is just <b>8</b>.",
+    cap:"Read it place by place: ten, minus two. So <b>1 <span class='bd'>2</span></b> is just <b>8</b>.",
     dur:5600 },
 
   { eye:"The intuition",
     html:`<div class="ladder">
-        <div class="lrow r" style="--d:.3s"><b>8</b> = 1&nbsp;<span class="bd">2</span> &nbsp;<span class="hint">(10 &minus; 2)</span></div>
-        <div class="lrow r" style="--d:.8s"><b>7</b> = 1&nbsp;<span class="bd">3</span> &nbsp;<span class="hint">(10 &minus; 3)</span></div>
-        <div class="lrow r" style="--d:1.3s"><b>19</b> = 2&nbsp;<span class="bd">1</span> &nbsp;<span class="hint">(20 &minus; 1)</span></div>
+        <div class="lrow r" style="--d:.3s"><b>8</b> = 1&nbsp;<span class='bd'>2</span> &nbsp;<span class="hint">(10 &minus; 2)</span></div>
+        <div class="lrow r" style="--d:.8s"><b>7</b> = 1&nbsp;<span class='bd'>3</span> &nbsp;<span class="hint">(10 &minus; 3)</span></div>
+        <div class="lrow r" style="--d:1.3s"><b>19</b> = 2&nbsp;<span class='bd'>1</span> &nbsp;<span class="hint">(20 &minus; 1)</span></div>
       </div>`,
     cap:"Any number just shy of a round ten is a bar in disguise — &ldquo;the next ten, minus a little.&rdquo;",
     dur:5800 },
 
   { eye:"Reading it back",
     html: borrowScene(3,5,25),
-    cap:"To read it the normal way: <b>borrow one</b> from the left digit, and the barred digit becomes <b>ten minus itself</b>. 3 5&#773; &rarr; 25.",
+    cap:"To read it the normal way: <b>borrow one</b> from the left digit, and the barred digit becomes <b>ten minus itself</b>. 3 <span class='bd'>5</span> &rarr; 25.",
     dur:6200 },
 
   { eye:"Same move again",
     html: borrowScene(9,8,82),
-    cap:"Once more — 9 8&#773;: the nine drops to eight, and ten minus eight is two &rarr; <b>82</b>. The move never changes.",
+    cap:"Once more — 9 <span class='bd'>8</span>: the nine drops to eight, and ten minus eight is two &rarr; <b>82</b>. The move never changes.",
     dur:6000 },
 
   { eye:"Why it matters",
@@ -226,7 +253,7 @@ const SCENES=[
       <div class="down r" style="--d:.9s">&#8595;</div>
       <div class="big">${D(9,'').replace('class="dig "','class="dig r" style="--d:1.2s"')}${B(1,'1.9s','o').replace('class="dig o"','class="dig o r" style="--d:1.5s"')}
         <span class="hint r" style="--d:2.3s; font-size:clamp(13px,3vw,17px); color:var(--ink-soft); font-style:italic; align-self:center; padding-bottom:10px">(90 &minus; 1)</span></div>`,
-    cap:"Now the magic: <b>89 is 9 1&#773;</b> — one short of ninety. Numbers that hug a round base become effortless to square and multiply.",
+    cap:"Now the magic: <b>89 is 9 <span class='bd'>1</span></b> — one short of ninety. Numbers that hug a round base become effortless to square and multiply.",
     dur:6400 },
 
   { eye:"In one line",
